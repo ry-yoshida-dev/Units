@@ -11,8 +11,8 @@ class Angle:
 
     Parameters
     ----------
-    value: float
-        The value of the angle.
+    value: np.ndarray
+        The value array of the angle.
     unit: AngleUnit
         The unit of the angle.
     """
@@ -110,7 +110,7 @@ class Angle:
 
         Returns
         -------
-        float:
+        np.ndarray:
             The cosine of the angle.
         """
         return np.cos(self.radian)
@@ -122,7 +122,7 @@ class Angle:
 
         Returns
         -------
-        float:
+        np.ndarray:
             The tangent of the angle.
         """
         return np.tan(self.radian)
