@@ -1,6 +1,10 @@
 from __future__ import annotations
-import numpy as np
+
 from dataclasses import dataclass
+
+import numpy as np
+
+from ..types import NumericArray
 
 from .unit import AngleUnit
 
@@ -11,12 +15,12 @@ class Angle:
 
     Parameters
     ----------
-    value: np.ndarray
+    value: NumericArray
         The value array of the angle.
     unit: AngleUnit
         The unit of the angle.
     """
-    value: np.ndarray
+    value: NumericArray
     unit: AngleUnit
 
     def __post_init__(self):
@@ -24,13 +28,13 @@ class Angle:
             raise ValueError("Angle must be a 1D array")
 
     @property
-    def radian(self) -> np.ndarray:
+    def radian(self) -> NumericArray:
         """
         Return the angle in radians.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The angle in radians.
         """
         match self.unit:
@@ -40,13 +44,13 @@ class Angle:
                 return self.value
 
     @property
-    def degree(self) -> np.ndarray:
+    def degree(self) -> NumericArray:
         """
         Return the angle in degrees.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The angle in degrees.
         """
         match self.unit:
@@ -92,37 +96,37 @@ class Angle:
         self.unit = converted_unit
 
     @property
-    def sin(self) -> np.ndarray:
+    def sin(self) -> NumericArray:
         """
         Return the sine of the angle.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The sine of the angle.
         """
         return np.sin(self.radian)
     
     @property
-    def cos(self) -> np.ndarray:
+    def cos(self) -> NumericArray:
         """
         Return the cosine of the angle.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The cosine of the angle.
         """
         return np.cos(self.radian)
     
     @property
-    def tan(self) -> np.ndarray:
+    def tan(self) -> NumericArray:
         """
         Return the tangent of the angle.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The tangent of the angle.
         """
         return np.tan(self.radian)

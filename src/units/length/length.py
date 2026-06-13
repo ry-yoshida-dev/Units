@@ -1,6 +1,10 @@
 from __future__ import annotations
-import numpy as np
+
 from dataclasses import dataclass
+
+import numpy as np
+
+from ..types import NumericArray, as_numeric_array
 
 from .unit import LengthUnit
 
@@ -11,12 +15,12 @@ class Length:
 
     Parameters
     ----------
-    value: np.ndarray
+    value: NumericArray
         The value of the length.
     unit: LengthUnit
         The unit of the length.
     """
-    value: np.ndarray
+    value: NumericArray
     unit: LengthUnit
 
     def __post_init__(self):
@@ -24,64 +28,64 @@ class Length:
             raise ValueError("Length value must be positive")
     
     @property
-    def meter(self) -> np.ndarray:
+    def meter(self) -> NumericArray:
         """
         Return the length in meters.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The length in meters.
         """
         return self.value * self.unit.to_meter
 
     @property
-    def km(self) -> np.ndarray:
+    def km(self) -> NumericArray:
         """
         Return the length in kilometers.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The length in kilometers.
         """
-        return self.meter / LengthUnit.KM.to_meter
+        return as_numeric_array(self.meter / LengthUnit.KM.to_meter)
 
     @property
-    def cm(self) -> np.ndarray:
+    def cm(self) -> NumericArray:
         """
         Return the length in centimeters.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The length in centimeters.
         """
-        return self.meter / LengthUnit.CM.to_meter
+        return as_numeric_array(self.meter / LengthUnit.CM.to_meter)
 
     @property
-    def mm(self) -> np.ndarray:
+    def mm(self) -> NumericArray:
         """
         Return the length in millimeters.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The length in millimeters.
         """
-        return self.meter / LengthUnit.MM.to_meter
+        return as_numeric_array(self.meter / LengthUnit.MM.to_meter)
 
     @property
-    def inch(self) -> np.ndarray:
+    def inch(self) -> NumericArray:
         """
         Return the length in inches.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The length in inches.
         """
-        return self.meter / LengthUnit.INCH.to_meter
+        return as_numeric_array(self.meter / LengthUnit.INCH.to_meter)
 
     def convert_unit(
         self, 
@@ -100,7 +104,7 @@ class Length:
 
         # Convert to meters first, then to target unit
         meter_value = self.meter
-        self.value = meter_value / converted_unit.to_meter
+        self.value = as_numeric_array(meter_value / converted_unit.to_meter)
         self.unit = converted_unit
 
     def __add__(
@@ -139,14 +143,14 @@ class Length:
 
     def __mul__(
         self, 
-        scalar: float | np.ndarray
+        scalar: float | NumericArray
         ) -> Length:
         """
         Multiply length by a scalar.
 
         Parameters
         ----------
-        scalar: float | np.ndarray
+        scalar: float | NumericArray
             The scalar to multiply by.
 
         Returns
@@ -159,13 +163,13 @@ class Length:
             unit=self.unit
         )
 
-    def __rmul__(self, scalar: float | np.ndarray) -> Length:
+    def __rmul__(self, scalar: float | NumericArray) -> Length:
         """
         Multiply length by a scalar (right multiplication).
 
         Parameters
         ----------
-        scalar: float | np.ndarray
+        scalar: float | NumericArray
             The scalar to multiply by.
 
         Returns
@@ -175,25 +179,25 @@ class Length:
         """
         return self.__mul__(scalar)
 
-    def __truediv__(self, other: Length | float | np.ndarray) -> Length | np.ndarray:
+    def __truediv__(self, other: Length | float | NumericArray) -> Length | NumericArray:
         """
         Divide length by another length or a scalar.
 
         Parameters
         ----------
-        other: Length | float | np.ndarray
+        other: Length | float | NumericArray
             The length or scalar to divide by.
 
         Returns
         -------
-        Length | np.ndarray:
-            If dividing by Length, returns a np.ndarray (ratio).
-            If dividing by float or np.ndarray, returns a Length.
+        Length | NumericArray:
+            If dividing by Length, returns a NumericArray (ratio).
+            If dividing by float or NumericArray, returns a Length.
         """
         if isinstance(other, Length):
-            return self.meter / other.meter
+            return as_numeric_array(self.meter / other.meter)
         return Length(
-            value=self.value / other,
+            value=as_numeric_array(self.value / other),
             unit=self.unit
         )
 

@@ -1,6 +1,7 @@
 from .length import Length, LengthUnit
 from .angle import Angle, AngleUnit
 from .time import Time, TimeUnit
+from .types import NumericArray
 
 __all__ = [
     # length
@@ -12,4 +13,6 @@ __all__ = [
     # time
     "Time",
     "TimeUnit",
+    # types
+    "NumericArray",
 ]

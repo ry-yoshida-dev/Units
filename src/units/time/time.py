@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-import numpy as np
 from dataclasses import dataclass
+
+import numpy as np
+
+from ..types import NumericArray, as_numeric_array
 
 from .unit import TimeUnit
 
@@ -13,73 +16,73 @@ class Time:
 
     Parameters
     ----------
-    value: np.ndarray
+    value: NumericArray
         The value of the duration.
     unit: TimeUnit
         The unit of the duration.
     """
-    value: np.ndarray
+    value: NumericArray
     unit: TimeUnit
 
     @property
-    def second(self) -> np.ndarray:
+    def second(self) -> NumericArray:
         """
         Return the duration in seconds.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The duration in seconds.
         """
         return self.value * self.unit.to_second
 
     @property
-    def ms(self) -> np.ndarray:
+    def ms(self) -> NumericArray:
         """
         Return the duration in milliseconds.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The duration in milliseconds.
         """
-        return self.second / TimeUnit.MS.to_second
+        return as_numeric_array(self.second / TimeUnit.MS.to_second)
 
     @property
-    def minute(self) -> np.ndarray:
+    def minute(self) -> NumericArray:
         """
         Return the duration in minutes.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The duration in minutes.
         """
-        return self.second / TimeUnit.MIN.to_second
+        return as_numeric_array(self.second / TimeUnit.MIN.to_second)
 
     @property
-    def hour(self) -> np.ndarray:
+    def hour(self) -> NumericArray:
         """
         Return the duration in hours.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The duration in hours.
         """
-        return self.second / TimeUnit.HR.to_second
+        return as_numeric_array(self.second / TimeUnit.HR.to_second)
 
     @property
-    def day(self) -> np.ndarray:
+    def day(self) -> NumericArray:
         """
         Return the duration in days.
 
         Returns
         -------
-        np.ndarray:
+        NumericArray:
             The duration in days.
         """
-        return self.second / TimeUnit.DAY.to_second
+        return as_numeric_array(self.second / TimeUnit.DAY.to_second)
 
     def convert_unit(
         self,
@@ -97,7 +100,7 @@ class Time:
             return
 
         sec_value = self.second
-        self.value = sec_value / converted_unit.to_second
+        self.value = as_numeric_array(sec_value / converted_unit.to_second)
         self.unit = converted_unit
 
     def __add__(self, other: Time) -> Time:
@@ -128,13 +131,13 @@ class Time:
             unit=TimeUnit.S,
         )
 
-    def __mul__(self, scalar: float | np.ndarray) -> Time:
+    def __mul__(self, scalar: float | NumericArray) -> Time:
         """
         Multiply duration by a scalar.
 
         Parameters
         ----------
-        scalar: float | np.ndarray
+        scalar: float | NumericArray
             The scalar to multiply by.
 
         Returns
@@ -147,13 +150,13 @@ class Time:
             unit=self.unit,
         )
 
-    def __rmul__(self, scalar: float | np.ndarray) -> Time:
+    def __rmul__(self, scalar: float | NumericArray) -> Time:
         """
         Multiply duration by a scalar (right multiplication).
 
         Parameters
         ----------
-        scalar: float | np.ndarray
+        scalar: float | NumericArray
             The scalar to multiply by.
 
         Returns
@@ -163,25 +166,25 @@ class Time:
         """
         return self.__mul__(scalar)
 
-    def __truediv__(self, other: Time | float | np.ndarray) -> Time | np.ndarray:
+    def __truediv__(self, other: Time | float | NumericArray) -> Time | NumericArray:
         """
         Divide duration by another duration or a scalar.
 
         Parameters
         ----------
-        other: Time | float | np.ndarray
+        other: Time | float | NumericArray
             The duration or scalar to divide by.
 
         Returns
         -------
-        Time | np.ndarray:
-            If dividing by Time, returns a np.ndarray (ratio).
-            If dividing by float or np.ndarray, returns a Time.
+        Time | NumericArray:
+            If dividing by Time, returns a NumericArray (ratio).
+            If dividing by float or NumericArray, returns a Time.
         """
         if isinstance(other, Time):
-            return self.second / other.second
+            return as_numeric_array(self.second / other.second)
         return Time(
-            value=self.value / other,
+            value=as_numeric_array(self.value / other),
             unit=self.unit,
         )
 
