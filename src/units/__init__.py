@@ -1,5 +1,5 @@
 from .length import Length, LengthUnit
-from .angle import Angle, AngleUnit
+from .angle import Angle, AngleUnit, DegreesMinutesSeconds
 from .time import Time, TimeUnit
 from .types import NumericArray
 
@@ -10,6 +10,7 @@ __all__ = [
     # angle
     "Angle",
     "AngleUnit",
+    "DegreesMinutesSeconds",
     # time
     "Time",
     "TimeUnit",

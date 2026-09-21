@@ -23,7 +23,7 @@ class Length:
     value: NumericArray
     unit: LengthUnit
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if np.any(self.value < 0):
             raise ValueError("Length value must be positive")
     
@@ -206,7 +206,7 @@ class Length:
         """Compare if this length is equal to another."""
         if not isinstance(other, Length):
             return False
-        return np.allclose(self.meter, other.meter, atol=1e-9)  # Small tolerance for float comparison
+        return self.value.shape == other.value.shape and np.allclose(self.meter, other.meter, atol=1e-9)  # Small tolerance for float comparison
 
     def __str__(self) -> str:
         """String representation of the length."""

@@ -192,7 +192,7 @@ class Time:
         """Compare if this duration is equal to another."""
         if not isinstance(other, Time):
             return False
-        return np.allclose(self.second, other.second, atol=1e-9)
+        return self.value.shape == other.value.shape and np.allclose(self.second, other.second, atol=1e-9)
 
     def __str__(self) -> str:
         """String representation of the duration."""

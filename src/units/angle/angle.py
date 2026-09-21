@@ -4,8 +4,9 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from ..types import NumericArray
+from ..types import NumericArray, as_numeric_array
 
+from .degrees_minutes_seconds import DegreesMinutesSeconds
 from .unit import AngleUnit
 
 @dataclass
@@ -23,9 +24,49 @@ class Angle:
     value: NumericArray
     unit: AngleUnit
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.value.ndim != 1:
             raise ValueError("Angle must be a 1D array")
+
+    @classmethod
+    def from_degrees_minutes_seconds(
+        cls,
+        sexagesimal: DegreesMinutesSeconds,
+        ) -> Angle:
+        """
+        Build an angle from sexagesimal degrees, minutes and seconds.
+
+        Parameters
+        ----------
+        sexagesimal : DegreesMinutesSeconds
+            The signed angle in degrees, minutes and seconds.
+
+        Returns
+        -------
+        Angle
+            The angle in degrees.
+        """
+        angle: Angle = cls(value=sexagesimal.total_seconds, unit=AngleUnit.ARCSECOND)
+        angle.convert_unit(AngleUnit.DEGREE)
+        return angle
+
+    @property
+    def degrees_minutes_seconds(self) -> DegreesMinutesSeconds:
+        """
+        Return the angle in sexagesimal degrees, minutes and seconds.
+
+        Returns
+        -------
+        DegreesMinutesSeconds
+            The signed angle in canonical degrees, minutes and seconds.
+        """
+        signed_seconds: NumericArray = self._value_in(AngleUnit.ARCSECOND)
+        return DegreesMinutesSeconds.normalized(
+            degrees=as_numeric_array(np.zeros_like(signed_seconds)),
+            minutes=as_numeric_array(np.zeros_like(signed_seconds)),
+            seconds=as_numeric_array(np.abs(signed_seconds)),
+            is_negative=signed_seconds < 0,
+            )
 
     @property
     def radian(self) -> NumericArray:
@@ -37,11 +78,7 @@ class Angle:
         NumericArray:
             The angle in radians.
         """
-        match self.unit:
-            case AngleUnit.DEGREE:
-                return np.deg2rad(self.value)
-            case AngleUnit.RADIAN:
-                return self.value
+        return self._value_in(AngleUnit.RADIAN)
 
     @property
     def degree(self) -> NumericArray:
@@ -53,11 +90,12 @@ class Angle:
         NumericArray:
             The angle in degrees.
         """
-        match self.unit:
-            case AngleUnit.DEGREE:
-                return self.value
-            case AngleUnit.RADIAN:
-                return np.rad2deg(self.value)
+        return self.value * self.unit.to_degree
+
+    def _value_in(self, target_unit: AngleUnit) -> NumericArray:
+        if self.unit == target_unit:
+            return self.value
+        return as_numeric_array(self.degree / target_unit.to_degree)
 
     @property
     def is_degree(self) -> bool:
@@ -80,19 +118,12 @@ class Angle:
         """
         Convert the angle unit.
 
-        Parameters:
+        Parameters
         ----------
         converted_unit: AngleUnit
             The unit to convert the angle to.
         """
-        if self.unit == converted_unit:
-            return
-        match converted_unit:
-            case AngleUnit.DEGREE:
-                new_value = self.degree
-            case AngleUnit.RADIAN:
-                new_value = self.radian
-        self.value = new_value
+        self.value = self._value_in(converted_unit)
         self.unit = converted_unit
 
     @property
@@ -164,6 +195,26 @@ class Angle:
             value=self.radian - other.radian, 
             unit=AngleUnit.RADIAN
             )
+
+    def __neg__(self) -> Angle:
+        """
+        Negate the angle.
+
+        Returns
+        -------
+        Angle:
+            The negated angle in the same unit.
+        """
+        return Angle(
+            value=as_numeric_array(-self.value),
+            unit=self.unit
+            )
+
+    def __eq__(self, other: object) -> bool:
+        """Compare if this angle is equal to another."""
+        if not isinstance(other, Angle):
+            return False
+        return self.value.shape == other.value.shape and np.allclose(self.degree, other.degree, atol=1e-9)
 
     def __len__(self) -> int:
         """
