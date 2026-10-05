@@ -2,7 +2,7 @@
 
 ## Overview
 `units` is a Python package for working with physical quantities and unit conversion.
-It provides utilities for **length**, **angle**, and **time** values with simple arithmetic and conversion helpers.
+It provides utilities for **length**, **area**, **angle**, and **time** values with simple arithmetic and conversion helpers.
 See [src/units/README.md](src/units/README.md) for package details.
 
 ## Installation

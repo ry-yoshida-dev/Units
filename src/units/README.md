@@ -10,6 +10,8 @@ This package provides utilities for working with physical quantities and units.
 |-----------|-------------|
 | [types.py](./types.py) | Shared NumPy array type aliases for numeric physical quantity values. |
 | [length](./length/) | Utilities for working with length values and length unit conversion. |
+| [prefix](./prefix/) | SI prefixes kept apart from the units they scale. |
+| [area](./area/) | Utilities for working with area values, given as a unit and an SI prefix, and area unit conversion. |
 | [angle](./angle/) | Utilities for working with angle values, angle unit conversion, and trigonometric operations. |
 | [time](./time/) | Utilities for working with time durations and time unit conversion. |
 
