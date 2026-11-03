@@ -2,7 +2,7 @@
 
 ## Overview
 `units` is a Python package for working with physical quantities and unit conversion.
-It provides utilities for **length**, **area**, **angle**, and **time** values with simple arithmetic and conversion helpers.
+It provides utilities for **length**, **area**, **volume**, **angle**, **time**, **speed**, **mass**, **temperature**, **frequency**, **pressure**, and **sound pressure level** values with simple arithmetic and conversion helpers.
 See [src/units/README.md](src/units/README.md) for package details.
 
 ## Installation
@@ -17,10 +17,10 @@ pip install -e .
 
 ```python
 import numpy as np
-from units import Angle, AngleUnit, Length, LengthUnit, Time, TimeUnit
+from units import Angle, AngleUnit, Length, LengthUnit, MetricPrefix, Time, TimeUnit
 
 l1 = Length(value=np.array([1.0, 2.0]), unit=LengthUnit.M)
-l2 = Length(value=np.array([50.0, 50.0]), unit=LengthUnit.CM)
+l2 = Length(value=np.array([50.0, 50.0]), unit=LengthUnit.M, prefix=MetricPrefix.CENTI)
 total = l1 + l2
 print(total.meter)  # [1.5, 2.5]
 

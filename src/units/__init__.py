@@ -1,8 +1,29 @@
-from .area import Area, AreaUnit
-from .length import Length, LengthUnit
-from .angle import Angle, AngleUnit, DegreesMinutesSeconds
 from .prefix import MetricPrefix
-from .time import Time, TimeUnit
+from .quantity import (
+    Angle,
+    AngleUnit,
+    Area,
+    AreaUnit,
+    DegreesMinutesSeconds,
+    Frequency,
+    FrequencyUnit,
+    Length,
+    LengthUnit,
+    Mass,
+    MassUnit,
+    Pressure,
+    PressureUnit,
+    SoundPressureLevel,
+    SoundPressureLevelUnit,
+    Speed,
+    SpeedUnit,
+    Temperature,
+    TemperatureUnit,
+    Time,
+    TimeUnit,
+    Volume,
+    VolumeUnit,
+)
 from .types import NumericArray
 
 __all__ = [
@@ -12,15 +33,36 @@ __all__ = [
     # area
     "Area",
     "AreaUnit",
+    # volume
+    "Volume",
+    "VolumeUnit",
     # angle
     "Angle",
     "AngleUnit",
     "DegreesMinutesSeconds",
-    # prefix
-    "MetricPrefix",
     # time
     "Time",
     "TimeUnit",
+    # speed
+    "Speed",
+    "SpeedUnit",
+    # mass
+    "Mass",
+    "MassUnit",
+    # temperature
+    "Temperature",
+    "TemperatureUnit",
+    # frequency
+    "Frequency",
+    "FrequencyUnit",
+    # pressure
+    "Pressure",
+    "PressureUnit",
+    # sound pressure level
+    "SoundPressureLevel",
+    "SoundPressureLevelUnit",
+    # prefix
+    "MetricPrefix",
     # types
     "NumericArray",
 ]

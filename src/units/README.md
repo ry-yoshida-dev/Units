@@ -9,24 +9,24 @@ This package provides utilities for working with physical quantities and units.
 | Component | Description |
 |-----------|-------------|
 | [types.py](./types.py) | Shared NumPy array type aliases for numeric physical quantity values. |
-| [length](./length/) | Utilities for working with length values and length unit conversion. |
 | [prefix](./prefix/) | SI prefixes kept apart from the units they scale. |
-| [area](./area/) | Utilities for working with area values, given as a unit and an SI prefix, and area unit conversion. |
-| [angle](./angle/) | Utilities for working with angle values, angle unit conversion, and trigonometric operations. |
-| [time](./time/) | Utilities for working with time durations and time unit conversion. |
+| [quantity](./quantity/) | Physical quantities, each with a container class and a unit enum. |
 
 ## Usage
 
 ```python
 import numpy as np
 
-from units import Angle, AngleUnit, Length, LengthUnit, Time, TimeUnit
+from units import Angle, AngleUnit, Length, LengthUnit, MetricPrefix, Time, TimeUnit
 
-distance = Length(value=np.array([1.2]), unit=LengthUnit.KM)
+distance = Length(value=np.array([1.2]), unit=LengthUnit.M, prefix=MetricPrefix.KILO)
 heading = Angle(value=np.array([90.0]), unit=AngleUnit.DEGREE)
 duration = Time(value=np.array([2.0]), unit=TimeUnit.HR)
 
 print(distance.meter)   # [1200.]
 print(heading.radian)   # [1.57079633]
 print(duration.second)  # [7200.]
+
+speed = distance / duration
+print(speed.kilometer_per_hour)  # [0.6]
 ```

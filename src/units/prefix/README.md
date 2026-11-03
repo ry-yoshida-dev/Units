@@ -11,7 +11,7 @@ the unit itself.
 
 | Component | Description |
 |-----------|-------------|
-| [metric_prefix.py](./metric_prefix.py) | Enum defining the SI prefixes from giga to nano, plus `NONE` for no prefix, and their factors. |
+| [metric_prefix.py](./metric_prefix.py) | Enum defining the SI prefixes from peta to femto, plus `NONE` for no prefix, and their factors. |
 
 ## Usage
 

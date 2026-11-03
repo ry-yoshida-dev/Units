@@ -11,6 +11,10 @@ class MetricPrefix(Enum):
 
     Attributes
     ----------
+    PETA: MetricPrefix
+        10^15, written P.
+    TERA: MetricPrefix
+        10^12, written T.
     GIGA: MetricPrefix
         10^9, written G.
     MEGA: MetricPrefix
@@ -33,8 +37,14 @@ class MetricPrefix(Enum):
         10^-6, written µ.
     NANO: MetricPrefix
         10^-9, written n.
+    PICO: MetricPrefix
+        10^-12, written p.
+    FEMTO: MetricPrefix
+        10^-15, written f.
     """
 
+    PETA = "P"
+    TERA = "T"
     GIGA = "G"
     MEGA = "M"
     KILO = "k"
@@ -46,6 +56,8 @@ class MetricPrefix(Enum):
     MILLI = "m"
     MICRO = "µ"
     NANO = "n"
+    PICO = "p"
+    FEMTO = "f"
 
     @property
     def exponent(self) -> int:
@@ -58,6 +70,10 @@ class MetricPrefix(Enum):
             The exponent, such as 3 for kilo.
         """
         match self:
+            case MetricPrefix.PETA:
+                return 15
+            case MetricPrefix.TERA:
+                return 12
             case MetricPrefix.GIGA:
                 return 9
             case MetricPrefix.MEGA:
@@ -80,6 +96,10 @@ class MetricPrefix(Enum):
                 return -6
             case MetricPrefix.NANO:
                 return -9
+            case MetricPrefix.PICO:
+                return -12
+            case MetricPrefix.FEMTO:
+                return -15
 
     @property
     def factor(self) -> float:
