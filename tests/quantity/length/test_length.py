@@ -60,7 +60,7 @@ def test_unit_to_meter(unit: LengthUnit) -> None:
 
 @pytest.mark.parametrize("values", [[-1.0], [1.0, -0.001]])
 def test_length_rejects_negative_values(values: list[float]) -> None:
-    with pytest.raises(ValueError, match="positive"):
+    with pytest.raises(ValueError, match="must not be negative"):
         _ = make_length(values, LengthUnit.M)
 
 
@@ -144,7 +144,7 @@ def test_subtraction_mixes_units_and_returns_meter() -> None:
 
 
 def test_subtraction_rejects_negative_result() -> None:
-    with pytest.raises(ValueError, match="positive"):
+    with pytest.raises(ValueError, match="must not be negative"):
         _ = make_length([1.0], LengthUnit.M) - make_length([2.0], LengthUnit.M)
 
 
@@ -162,7 +162,7 @@ def test_multiplication_by_array_is_elementwise() -> None:
 
 
 def test_multiplication_by_negative_scalar_is_rejected() -> None:
-    with pytest.raises(ValueError, match="positive"):
+    with pytest.raises(ValueError, match="must not be negative"):
         _ = make_length([1.0], LengthUnit.M) * -1.0
 
 

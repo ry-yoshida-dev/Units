@@ -15,6 +15,8 @@ if TYPE_CHECKING:
 UnitT = TypeVar("UnitT", bound=Unit)
 LinearUnitT = TypeVar("LinearUnitT", bound=LinearUnit)
 
+EQUALITY_TOLERANCE: float = 1e-9
+
 
 @dataclass
 class Quantity(Generic[UnitT]):
@@ -36,6 +38,8 @@ class Quantity(Generic[UnitT]):
 
     Raises
     ------
+    TypeError
+        If the unit belongs to another quantity.
     ValueError
         If a negative value is given to an unsigned quantity, or a prefix is given to a
         unit that takes none.
@@ -46,18 +50,28 @@ class Quantity(Generic[UnitT]):
     prefix: MetricPrefix = MetricPrefix.NONE
 
     _base_unit: ClassVar[Any]
-    _is_signed: ClassVar[bool]
+    _is_signed: ClassVar[bool] = True
 
-    def __init_subclass__(cls, *, base_unit: Unit | None = None, is_signed: bool = True) -> None:
+    # Makes NumPy defer to `__rmul__` instead of multiplying element by element.
+    __array_ufunc__: ClassVar[None] = None
+
+    def __init_subclass__(cls, *, base_unit: Unit | None = None, is_signed: bool | None = None) -> None:
         super().__init_subclass__()
         if base_unit is not None:
             cls._base_unit = base_unit
-        cls._is_signed = is_signed
+        if is_signed is not None:
+            cls._is_signed = is_signed
 
     def __post_init__(self) -> None:
+        self._validate_unit(self.unit)
         if not self._is_signed and np.any(self.value < 0):
-            raise ValueError(f"{type(self).__name__} value must be positive")
+            raise ValueError(f"{type(self).__name__} value must not be negative")
         self.unit.validate_prefix(self.prefix)
+
+    def _validate_unit(self, unit: Unit) -> None:
+        unit_type: type[Unit] = type(self._base_unit)
+        if not isinstance(unit, unit_type):
+            raise TypeError(f"{type(self).__name__} takes a {unit_type.__name__}, given: {unit!r}")
 
     @classmethod
     def from_base(cls, value: NumericArray) -> Self:
@@ -102,15 +116,18 @@ class Quantity(Generic[UnitT]):
         Returns
         -------
         NumericArray
-            The values in that unit and prefix.
+            A new array of the values in that unit and prefix.
 
         Raises
         ------
+        TypeError
+            If the unit belongs to another quantity.
         ValueError
             If a prefix is given to a unit that takes none.
         """
+        self._validate_unit(unit)
         if unit == self.unit and prefix == self.prefix:
-            return self.value
+            return as_numeric_array(np.copy(self.value))
         return unit.from_base(self.base_value, prefix)
 
     def convert_unit(
@@ -130,20 +147,32 @@ class Quantity(Generic[UnitT]):
 
         Raises
         ------
+        TypeError
+            If the unit belongs to another quantity.
         ValueError
             If a prefix is given to a unit that takes none.
         """
         unit: UnitT = self._base_unit if converted_unit is None else converted_unit
+        if unit == self.unit and converted_prefix == self.prefix:
+            return
         self.value = self.in_unit(unit, converted_prefix)
         self.unit = unit
         self.prefix = converted_prefix
 
     def __eq__(self, other: object) -> bool:
-        """Compare with another quantity of the same type in its base unit."""
+        """
+        Compare with another quantity of the same type in its base unit.
+
+        The absolute tolerance follows the finer of the two units, since a fixed one in the
+        base unit would make small values such as 1 nm and 2 nm equal.
+        """
         if type(other) is not type(self):
             return False
-        return self.value.shape == other.value.shape and bool(
-            np.allclose(self.base_value, other.base_value, atol=1e-9)
+        absolute_tolerance: float = EQUALITY_TOLERANCE * min(
+            self.unit.scale(self.prefix), other.unit.scale(other.prefix)
+        )
+        return np.shape(self.value) == np.shape(other.value) and bool(
+            np.allclose(self.base_value, other.base_value, rtol=EQUALITY_TOLERANCE, atol=absolute_tolerance)
         )
 
     def __str__(self) -> str:
@@ -198,7 +227,14 @@ class LinearQuantity(Quantity[LinearUnitT]):
         -------
         Self
             The negated quantity in the same unit and prefix.
+
+        Raises
+        ------
+        TypeError
+            If the quantity is unsigned.
         """
+        if not self._is_signed:
+            raise TypeError(f"bad operand type for unary -: '{type(self).__name__}'")
         return type(self)(value=as_numeric_array(-self.value), unit=self.unit, prefix=self.prefix)
 
     @overload

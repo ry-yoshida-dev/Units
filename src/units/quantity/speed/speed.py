@@ -104,6 +104,12 @@ class Speed(LinearQuantity[SpeedUnit], base_unit=SpeedUnit.METER_PER_SECOND):
         NumericArray | Length | Frequency | Speed
             A ratio for a Speed, the wavelength for a Frequency, the frequency for a
             Length, or for a scalar, a Speed in the same unit.
+
+        Raises
+        ------
+        ValueError
+            If the speed is negative when dividing by a Frequency or a Length, since a
+            wavelength or a frequency cannot be.
         """
         # Imported here because Frequency refers back to Speed.
         from ..frequency import Frequency

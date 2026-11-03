@@ -91,7 +91,7 @@ def test_speed_times_time_is_length_in_either_order() -> None:
 
 def test_negative_distance_is_rejected() -> None:
     speed = Speed(value=np.array([-1.0]), unit=SpeedUnit.METER_PER_SECOND)
-    with pytest.raises(ValueError, match="positive"):
+    with pytest.raises(ValueError, match="must not be negative"):
         _ = speed * seconds(1.0)
 
 
@@ -157,3 +157,11 @@ def test_division_without_a_defined_result_is_rejected() -> None:
 
 def test_different_quantities_with_equal_base_values_are_not_equal() -> None:
     assert meters(1.0) != grams(1.0)
+
+
+def test_negative_speed_has_no_wavelength_or_frequency() -> None:
+    speed = Speed(value=np.array([-1.0]), unit=SpeedUnit.METER_PER_SECOND)
+    with pytest.raises(ValueError, match="must not be negative"):
+        speed / Frequency(value=np.array([1.0]), unit=FrequencyUnit.HERTZ)
+    with pytest.raises(ValueError, match="must not be negative"):
+        speed / Length(value=np.array([1.0]), unit=LengthUnit.M)

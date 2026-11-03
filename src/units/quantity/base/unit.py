@@ -1,5 +1,7 @@
 from enum import Enum
 
+import numpy as np
+
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
 
@@ -68,7 +70,23 @@ class Unit(Enum):
         str
             The symbol, such as `km2` or `ha`.
         """
-        return prefix.value + self.value
+        return f"{prefix.value}{self.value}"
+
+    def scale(self, prefix: MetricPrefix = MetricPrefix.NONE) -> float:
+        """
+        Return the size of one step of this unit in the base unit of the quantity.
+
+        Parameters
+        ----------
+        prefix: MetricPrefix
+            The prefix, or `MetricPrefix.NONE` for the unit itself.
+
+        Returns
+        -------
+        float
+            The size of one step, ignoring any offset between the scales.
+        """
+        return float(self.to_base(np.array(1.0), prefix) - self.to_base(np.array(0.0), prefix))
 
     def to_base(self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE) -> NumericArray:
         """

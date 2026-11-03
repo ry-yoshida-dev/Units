@@ -31,7 +31,7 @@ def test_only_the_hertz_takes_a_prefix(unit: FrequencyUnit) -> None:
 
 
 def test_frequency_rejects_negative_values() -> None:
-    with pytest.raises(ValueError, match="positive"):
+    with pytest.raises(ValueError, match="must not be negative"):
         _ = make_frequency([-1.0], FrequencyUnit.HERTZ)
 
 

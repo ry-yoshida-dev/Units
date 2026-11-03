@@ -51,7 +51,7 @@ def test_units_outside_the_metric_system_take_no_prefix(unit: MassUnit) -> None:
 
 @pytest.mark.parametrize("values", [[-1.0], [1.0, -0.001]])
 def test_mass_rejects_negative_values(values: list[float]) -> None:
-    with pytest.raises(ValueError, match="positive"):
+    with pytest.raises(ValueError, match="must not be negative"):
         _ = make_mass(values, MassUnit.GRAM)
 
 

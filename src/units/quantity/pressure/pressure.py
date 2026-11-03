@@ -93,10 +93,13 @@ class Pressure(LinearQuantity[PressureUnit], base_unit=PressureUnit.PASCAL):
             If any pressure is negative, since an effective sound pressure cannot be.
         """
         # Imported here because SoundPressureLevel refers back to Pressure.
-        from ..sound_pressure_level import REFERENCE_SOUND_PRESSURE_PASCAL, SoundPressureLevel
+        from ..sound_pressure_level import (
+            REFERENCE_SOUND_PRESSURE_PASCAL,
+            SoundPressureLevel,
+        )
 
         if np.any(self.base_value < 0):
-            raise ValueError("Effective sound pressure must be positive")
+            raise ValueError("Effective sound pressure must not be negative")
         with np.errstate(divide="ignore"):
             return SoundPressureLevel.from_base(
                 as_numeric_array(20.0 * np.log10(self.base_value / REFERENCE_SOUND_PRESSURE_PASCAL))

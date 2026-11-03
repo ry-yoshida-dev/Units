@@ -2,6 +2,7 @@ import math
 
 from ..base import LinearUnit
 
+
 class AngleUnit(LinearUnit):
     """
     Enum defining the angle unit.

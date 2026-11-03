@@ -3,7 +3,13 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from units import MetricPrefix, Pressure, PressureUnit, SoundPressureLevel, SoundPressureLevelUnit
+from units import (
+    MetricPrefix,
+    Pressure,
+    PressureUnit,
+    SoundPressureLevel,
+    SoundPressureLevelUnit,
+)
 
 
 def decibels(*values: float) -> SoundPressureLevel:
@@ -39,7 +45,7 @@ def test_zero_pressure_is_negative_infinity_without_a_warning() -> None:
 
 
 def test_negative_sound_pressure_is_rejected() -> None:
-    with pytest.raises(ValueError, match="positive"):
+    with pytest.raises(ValueError, match="must not be negative"):
         _ = pascals(-1.0).sound_pressure_level
 
 

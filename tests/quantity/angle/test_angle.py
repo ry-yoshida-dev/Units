@@ -97,9 +97,10 @@ def test_radian_property(unit: AngleUnit, value: float, expected_radian: float) 
     assert np.allclose(make_angle([value], unit).radian, np.array([expected_radian]))
 
 
-def test_radian_property_returns_value_when_already_radian() -> None:
+def test_radian_property_returns_a_copy_when_already_radian() -> None:
     angle: Angle = make_angle([1.0], AngleUnit.RADIAN)
-    assert angle.radian is angle.value
+    assert np.array_equal(angle.radian, angle.value)
+    assert angle.radian is not angle.value
 
 
 def test_degree_property_on_integer_array() -> None:

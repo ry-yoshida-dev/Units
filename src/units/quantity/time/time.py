@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, overload
 
 from ...prefix import MetricPrefix
-from ...types import NumericArray, as_numeric_array
+from ...types import NumericArray
 from ..base import LinearQuantity
 from .unit import TimeUnit
 

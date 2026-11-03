@@ -14,4 +14,4 @@ Base classes shared by every quantity. They hold the value, unit and prefix hand
 | Component | Description |
 |-----------|-------------|
 | [unit.py](./unit.py) | Base enums for units, with prefix validation, symbols and conversion to and from the base unit. |
-| [quantity.py](./quantity.py) | Base containers for values with a unit and a prefix, unit conversion and arithmetic. |
+| [quantity.py](./quantity.py) | Base containers for values with a unit and a prefix, unit validation and conversion, equality and arithmetic. |

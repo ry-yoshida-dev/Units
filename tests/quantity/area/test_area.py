@@ -61,7 +61,7 @@ def test_prefix_is_applied_without_compounding_float_error() -> None:
 
 @pytest.mark.parametrize("values", [[-1.0], [1.0, -0.001]])
 def test_area_rejects_negative_values(values: list[float]) -> None:
-    with pytest.raises(ValueError, match="positive"):
+    with pytest.raises(ValueError, match="must not be negative"):
         _ = make_area(values, AreaUnit.SQUARE_METER)
 
 
