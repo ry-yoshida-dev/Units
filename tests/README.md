@@ -8,8 +8,8 @@ Pytest suite for the `units` package. The directories mirror `src/units`, so the
 
 | Component | Description |
 |-----------|-------------|
-| [prefix](./prefix/) | Tests for the metric prefixes. |
 | [quantity](./quantity/) | Tests for each physical quantity and for arithmetic across quantities. |
+| [test_prefix.py](./test_prefix.py) | Tests for the factors of `MetricPrefix`. |
 | [test_types.py](./test_types.py) | Tests for the shared numeric array helpers. |
 
 ## Examples
