@@ -3,8 +3,8 @@ from __future__ import annotations
 import numpy as np
 
 from ...types import NumericArray, as_numeric_array
-from ..base import Quantity
 from ..pressure import Pressure
+from ..quantity import Quantity
 from .unit import SoundPressureLevelUnit
 
 REFERENCE_SOUND_PRESSURE_PASCAL = 20e-6

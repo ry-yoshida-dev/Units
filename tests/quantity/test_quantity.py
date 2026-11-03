@@ -6,7 +6,8 @@ import numpy as np
 import pytest
 
 import units
-from units.quantity.base import LinearQuantity, Quantity, Unit
+from units.quantity.quantity import LinearQuantity, Quantity
+from units.quantity.unit import Unit
 
 
 def all_subclasses(cls: type) -> list[type]:

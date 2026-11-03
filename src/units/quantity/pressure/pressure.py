@@ -6,7 +6,7 @@ import numpy as np
 
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
-from ..base import LinearQuantity
+from ..quantity import LinearQuantity
 from .unit import PressureUnit
 
 if TYPE_CHECKING:

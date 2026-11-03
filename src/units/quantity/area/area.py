@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, overload
 
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
-from ..base import LinearQuantity
+from ..quantity import LinearQuantity
 from .unit import AreaUnit
 
 if TYPE_CHECKING:

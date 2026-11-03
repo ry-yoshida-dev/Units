@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, overload
 
 from ...types import NumericArray, as_numeric_array
-from ..base import LinearQuantity
 from ..length import Length
+from ..quantity import LinearQuantity
 from ..time import Time
 from .unit import SpeedUnit
 

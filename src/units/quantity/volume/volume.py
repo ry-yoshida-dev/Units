@@ -5,8 +5,8 @@ from typing import Any, overload
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
 from ..area import Area
-from ..base import LinearQuantity
 from ..length import Length
+from ..quantity import LinearQuantity
 from .unit import VolumeUnit
 
 

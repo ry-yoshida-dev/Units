@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from ...types import NumericArray, as_numeric_array
-from ..base import Quantity
+from ..quantity import Quantity
 from .unit import TemperatureUnit
 
 

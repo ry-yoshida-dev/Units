@@ -2,8 +2,8 @@ from enum import Enum
 
 import numpy as np
 
-from ...prefix import MetricPrefix
-from ...types import NumericArray, as_numeric_array
+from ..prefix import MetricPrefix
+from ..types import NumericArray, as_numeric_array
 
 
 class Unit(Enum):

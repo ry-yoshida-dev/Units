@@ -4,8 +4,8 @@ from typing import Any, overload
 
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
-from ..base import LinearQuantity
 from ..length import Length
+from ..quantity import LinearQuantity
 from ..speed import Speed
 from ..time import Time
 from .unit import FrequencyUnit

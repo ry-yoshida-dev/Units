@@ -1,6 +1,6 @@
 import math
 
-from ..base import LinearUnit
+from ..unit import LinearUnit
 
 
 class AngleUnit(LinearUnit):

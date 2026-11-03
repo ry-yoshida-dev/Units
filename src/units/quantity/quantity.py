@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar, overload
 
 import numpy as np
 
-from ...prefix import MetricPrefix
-from ...types import NumericArray, as_numeric_array
+from ..prefix import MetricPrefix
+from ..types import NumericArray, as_numeric_array
 from .unit import LinearUnit, Unit
 
 if TYPE_CHECKING:

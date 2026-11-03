@@ -1,6 +1,6 @@
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
-from ..base import Unit
+from ..unit import Unit
 
 
 class TemperatureUnit(Unit):

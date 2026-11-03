@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from ...types import NumericArray, as_numeric_array
-from ..base import LinearQuantity
+from ..quantity import LinearQuantity
 from .degrees_minutes_seconds import DegreesMinutesSeconds
 from .unit import AngleUnit
 
