@@ -11,7 +11,7 @@ This module provides utilities for working with frequency values and units, incl
 | [unit.py](./unit.py) | Enum defining frequency units without prefixes (Hz, rpm, bpm) with conversion to hertz. |
 | [frequency.py](./frequency.py) | Container class for frequency values with a unit, a prefix, unit conversion and the period. |
 
-## Usage
+## Examples
 
 ```python
 import numpy as np

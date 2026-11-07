@@ -31,7 +31,3 @@ print(a.sin)     # [0.0, 1.0]
 t = Time(value=np.array([1.0, 0.5]), unit=TimeUnit.HR)
 print(t.second)  # [3600.0, 1800.0]
 ```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

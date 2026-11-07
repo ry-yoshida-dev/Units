@@ -11,7 +11,7 @@ This module provides utilities for working with mass values and units, including
 | [unit.py](./unit.py) | Enum defining mass units without prefixes (g, t, lb, oz, ct, momme, kin, kan) and their conversion to grams. |
 | [mass.py](./mass.py) | Container class for mass values with a unit, a prefix and unit conversion. |
 
-## Usage
+## Examples
 
 ```python
 import numpy as np

@@ -11,7 +11,7 @@ This module provides utilities for working with speed values and units, includin
 | [unit.py](./unit.py) | Enum defining speed units (m/s, km/h, mph, ft/s, kn) with conversion to meters per second. |
 | [speed.py](./speed.py) | Container class for speed values with unit conversion and arithmetic. |
 
-## Usage
+## Examples
 
 ```python
 import numpy as np

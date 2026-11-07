@@ -12,7 +12,7 @@ This module provides utilities for working with angles, including unit conversio
 | [degrees_minutes_seconds.py](./degrees_minutes_seconds.py) | Validated signed sexagesimal (degrees, minutes, seconds) value with carrying normalization. |
 | [unit.py](./unit.py) | Enum defining angle units (degree, arcminute, arcsecond, radian, gradian, turn) with conversion to degrees. |
 
-## Usage
+## Examples
 
 ```python
 import numpy as np

@@ -11,7 +11,7 @@ This module provides utilities for working with volume values and units, includi
 | [unit.py](./unit.py) | Enum defining volume units without prefixes (m³, L, ft³, gal, imp gal, go, sho), their conversion to cubic meters and the power a prefix is raised to. |
 | [volume.py](./volume.py) | Container class for volume values with a unit, a prefix and unit conversion. |
 
-## Usage
+## Examples
 
 ```python
 import numpy as np

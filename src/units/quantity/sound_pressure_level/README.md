@@ -11,7 +11,7 @@ This module provides utilities for working with sound pressure levels in air, re
 | [unit.py](./unit.py) | Enum defining level units (dB, B) with conversion to decibels. |
 | [sound_pressure_level.py](./sound_pressure_level.py) | Container class for levels with unit conversion, conversion to `Pressure`, energy addition and subtraction. |
 
-## Usage
+## Examples
 
 ```python
 import numpy as np

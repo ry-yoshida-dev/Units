@@ -11,7 +11,7 @@ This module provides utilities for working with pressure values and units, inclu
 | [unit.py](./unit.py) | Enum defining pressure units without prefixes (Pa, bar, atm, Torr, mmHg, kgf/cm², psi) with conversion to pascals. |
 | [pressure.py](./pressure.py) | Container class for pressure values with a unit, a prefix and unit conversion. |
 
-## Usage
+## Examples
 
 ```python
 import numpy as np

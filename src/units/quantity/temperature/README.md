@@ -11,7 +11,7 @@ This module provides utilities for working with absolute temperatures and units,
 | [unit.py](./unit.py) | Enum defining temperature units (K, °C, °F, °R) with the offset and scale of their conversion to kelvin. |
 | [temperature.py](./temperature.py) | Container class for absolute temperatures with unit conversion and subtraction. |
 
-## Usage
+## Examples
 
 ```python
 import numpy as np

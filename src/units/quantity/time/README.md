@@ -11,7 +11,7 @@ This module provides utilities for working with time durations and units, includ
 | [unit.py](./unit.py) | Enum defining time units without prefixes (`s`, `min`, `h`, `day`, `week`) with conversion factors to seconds. |
 | [time.py](./time.py) | Container class for durations with a unit, a prefix, unit conversion, accessors in each supported unit, and basic arithmetic. |
 
-## Usage
+## Examples
 
 ```python
 import numpy as np
