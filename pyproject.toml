@@ -42,3 +42,6 @@ units = ["py.typed"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = ["--import-mode=importlib"]
+
+[tool.uv]
+exclude-newer = "7 days"
