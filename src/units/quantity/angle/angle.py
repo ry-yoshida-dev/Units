@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import numpy as np
+from typing_extensions import Self, override
 
 from ...types import NumericArray, as_numeric_array
 from ..quantity import LinearQuantity
 from .degrees_minutes_seconds import DegreesMinutesSeconds
 from .unit import AngleUnit
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
 
 
 class Angle(LinearQuantity[AngleUnit], base_unit=AngleUnit.DEGREE):
@@ -29,7 +25,7 @@ class Angle(LinearQuantity[AngleUnit], base_unit=AngleUnit.DEGREE):
     def from_degrees_minutes_seconds(
         cls,
         sexagesimal: DegreesMinutesSeconds,
-        ) -> Angle:
+    ) -> Angle:
         """
         Build an angle from sexagesimal degrees, minutes and seconds.
 
@@ -63,7 +59,7 @@ class Angle(LinearQuantity[AngleUnit], base_unit=AngleUnit.DEGREE):
             minutes=as_numeric_array(np.zeros_like(signed_seconds)),
             seconds=as_numeric_array(np.abs(signed_seconds)),
             is_negative=signed_seconds < 0,
-            )
+        )
 
     @property
     def degree(self) -> NumericArray:
@@ -110,6 +106,7 @@ class Angle(LinearQuantity[AngleUnit], base_unit=AngleUnit.DEGREE):
         """Return the tangent of the angle."""
         return np.tan(self.radian)
 
+    @override
     def __add__(self, other: LinearQuantity[AngleUnit]) -> Self:
         """
         Add two angles.
@@ -121,8 +118,11 @@ class Angle(LinearQuantity[AngleUnit], base_unit=AngleUnit.DEGREE):
         """
         if not isinstance(other, Angle):
             return NotImplemented
-        return type(self)(value=as_numeric_array(self.radian + other.radian), unit=AngleUnit.RADIAN)
+        return type(self)(
+            value=as_numeric_array(self.radian + other.radian), unit=AngleUnit.RADIAN
+        )
 
+    @override
     def __sub__(self, other: LinearQuantity[AngleUnit]) -> Self:
         """
         Subtract two angles.
@@ -134,7 +134,9 @@ class Angle(LinearQuantity[AngleUnit], base_unit=AngleUnit.DEGREE):
         """
         if not isinstance(other, Angle):
             return NotImplemented
-        return type(self)(value=as_numeric_array(self.radian - other.radian), unit=AngleUnit.RADIAN)
+        return type(self)(
+            value=as_numeric_array(self.radian - other.radian), unit=AngleUnit.RADIAN
+        )
 
     def __len__(self) -> int:
         """Return the number of angles."""

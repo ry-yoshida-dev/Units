@@ -6,7 +6,9 @@ import pytest
 from units import Frequency, FrequencyUnit, MetricPrefix, Time
 
 
-def make_frequency(values: list[float], unit: FrequencyUnit, prefix: MetricPrefix = MetricPrefix.NONE) -> Frequency:
+def make_frequency(
+    values: list[float], unit: FrequencyUnit, prefix: MetricPrefix = MetricPrefix.NONE
+) -> Frequency:
     return Frequency(value=np.array(values), unit=unit, prefix=prefix)
 
 
@@ -19,7 +21,9 @@ def make_frequency(values: list[float], unit: FrequencyUnit, prefix: MetricPrefi
         (FrequencyUnit.BPM, MetricPrefix.NONE, 1 / 60, "bpm"),
     ],
 )
-def test_conversion_factors_and_symbols(unit: FrequencyUnit, prefix: MetricPrefix, hertz: float, symbol: str) -> None:
+def test_conversion_factors_and_symbols(
+    unit: FrequencyUnit, prefix: MetricPrefix, hertz: float, symbol: str
+) -> None:
     assert unit.prefixed_factor(prefix) == pytest.approx(hertz)
     assert unit.symbol(prefix) == symbol
 
@@ -48,4 +52,6 @@ def test_named_unit_properties() -> None:
 def test_period_is_the_inverse_of_the_frequency() -> None:
     period: Time = make_frequency([4.0], FrequencyUnit.HERTZ).period
     assert np.allclose(period.second, np.array([0.25]))
-    assert np.allclose(make_frequency([120.0], FrequencyUnit.BPM).period.second, np.array([0.5]))
+    assert np.allclose(
+        make_frequency([120.0], FrequencyUnit.BPM).period.second, np.array([0.5])
+    )

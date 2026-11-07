@@ -19,7 +19,7 @@ import numpy as np
 from units import Mass, MassUnit, MetricPrefix
 
 parcel = Mass(value=np.array([2.5]), unit=MassUnit.GRAM, prefix=MetricPrefix.KILO)
-print(parcel.gram)   # [2500.]
+print(parcel.gram)  # [2500.]
 print(parcel.tonne)  # [0.0025]
-print(parcel)        # [2.5] kg
+print(parcel)  # [2.5] kg
 ```

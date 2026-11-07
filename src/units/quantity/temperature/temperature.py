@@ -49,6 +49,6 @@ class Temperature(Quantity[TemperatureUnit], base_unit=TemperatureUnit.KELVIN):
         NumericArray
             The difference of the two temperatures in kelvin.
         """
-        if not isinstance(other, Temperature):
+        if type(other) is not type(self):
             return NotImplemented
         return as_numeric_array(self.base_value - other.base_value)

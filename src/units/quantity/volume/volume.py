@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, overload
+from typing import overload
+
+from typing_extensions import Self, override
 
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
@@ -10,7 +12,9 @@ from ..quantity import LinearQuantity
 from .unit import VolumeUnit
 
 
-class Volume(LinearQuantity[VolumeUnit], base_unit=VolumeUnit.CUBIC_METER, is_signed=False):
+class Volume(
+    LinearQuantity[VolumeUnit], base_unit=VolumeUnit.CUBIC_METER, is_signed=False
+):
     """
     Container class for volumes, which cannot be negative.
 
@@ -63,11 +67,13 @@ class Volume(LinearQuantity[VolumeUnit], base_unit=VolumeUnit.CUBIC_METER, is_si
         """Return the volume in sho."""
         return self.in_unit(VolumeUnit.SHO)
 
-    @overload
-    def __truediv__(self, other: float | NumericArray) -> Volume: ...
+    # mypy forbids operator overrides that widen the operand types, which the
+    # products and quotients with other quantities must do.
+    @overload  # type: ignore[override]
+    def __truediv__(self, other: LinearQuantity[VolumeUnit]) -> NumericArray: ...
 
     @overload
-    def __truediv__(self, other: Volume) -> NumericArray: ...
+    def __truediv__(self, other: float | NumericArray) -> Self: ...
 
     @overload
     def __truediv__(self, other: Area) -> Length: ...
@@ -75,10 +81,10 @@ class Volume(LinearQuantity[VolumeUnit], base_unit=VolumeUnit.CUBIC_METER, is_si
     @overload
     def __truediv__(self, other: Length) -> Area: ...
 
-    @overload
-    def __truediv__(self, other: Any) -> Any: ...
-
-    def __truediv__(self, other: Any) -> Any:
+    @override
+    def __truediv__(
+        self, other: LinearQuantity[VolumeUnit] | float | NumericArray | Area | Length
+    ) -> NumericArray | Self | Length | Area:
         """
         Divide by a volume, an area, a length or a scalar.
 
@@ -94,7 +100,9 @@ class Volume(LinearQuantity[VolumeUnit], base_unit=VolumeUnit.CUBIC_METER, is_si
             Volume in the same unit and prefix.
         """
         if isinstance(other, Area):
-            return Length.from_base(as_numeric_array(self.base_value / other.base_value))
+            return Length.from_base(
+                as_numeric_array(self.base_value / other.base_value)
+            )
         if isinstance(other, Length):
             return Area.from_base(as_numeric_array(self.base_value / other.base_value))
         return super().__truediv__(other)

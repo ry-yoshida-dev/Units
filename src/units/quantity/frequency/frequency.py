@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, overload
+from typing import overload
+
+from typing_extensions import Self, override
 
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
@@ -11,7 +13,9 @@ from ..time import Time
 from .unit import FrequencyUnit
 
 
-class Frequency(LinearQuantity[FrequencyUnit], base_unit=FrequencyUnit.HERTZ, is_signed=False):
+class Frequency(
+    LinearQuantity[FrequencyUnit], base_unit=FrequencyUnit.HERTZ, is_signed=False
+):
     """
     Container class for frequencies, which cannot be negative.
 
@@ -54,8 +58,10 @@ class Frequency(LinearQuantity[FrequencyUnit], base_unit=FrequencyUnit.HERTZ, is
         """Return the duration of one cycle in seconds."""
         return Time.from_base(as_numeric_array(1.0 / self.base_value))
 
-    @overload
-    def __mul__(self, other: float | NumericArray) -> Frequency: ...
+    # mypy forbids operator overrides that widen the operand types, which the
+    # products and quotients with other quantities must do.
+    @overload  # type: ignore[override]
+    def __mul__(self, other: float | NumericArray) -> Self: ...
 
     @overload
     def __mul__(self, other: Time) -> NumericArray: ...
@@ -63,10 +69,10 @@ class Frequency(LinearQuantity[FrequencyUnit], base_unit=FrequencyUnit.HERTZ, is
     @overload
     def __mul__(self, other: Length) -> Speed: ...
 
-    @overload
-    def __mul__(self, other: Any) -> Any: ...
-
-    def __mul__(self, other: Any) -> Any:
+    @override
+    def __mul__(
+        self, other: float | NumericArray | Time | Length
+    ) -> Self | NumericArray | Speed:
         """
         Multiply by a duration, a length or a scalar.
 

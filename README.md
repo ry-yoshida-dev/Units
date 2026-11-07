@@ -26,7 +26,7 @@ print(total.meter)  # [1.5, 2.5]
 
 a = Angle(value=np.array([0.0, 90.0]), unit=AngleUnit.DEGREE)
 print(a.radian)  # [0.0, 1.57079633...]
-print(a.sin)     # [0.0, 1.0]
+print(a.sin)  # [0.0, 1.0]
 
 t = Time(value=np.array([1.0, 0.5]), unit=TimeUnit.HR)
 print(t.second)  # [3600.0, 1800.0]

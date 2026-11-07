@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -23,6 +25,7 @@ class FrequencyUnit(LinearUnit):
     BPM = "bpm"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of hertz in one of this unit, without a prefix.
@@ -39,6 +42,7 @@ class FrequencyUnit(LinearUnit):
                 return 1 / 60
 
     @property
+    @override
     def is_prefixable(self) -> bool:
         """
         Return whether this unit takes an SI prefix.

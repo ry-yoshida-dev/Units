@@ -21,5 +21,5 @@ from units import SoundPressureLevel, SoundPressureLevelUnit
 source = SoundPressureLevel(value=np.array([60.0]), unit=SoundPressureLevelUnit.DECIBEL)
 
 print((source + source).decibel)  # [63.01029996]
-print(source.pressure.pascal)     # [0.02]
+print(source.pressure.pascal)  # [0.02]
 ```

@@ -18,7 +18,9 @@ ALL_UNITS: list[tuple[MassUnit, MetricPrefix]] = [
 ]
 
 
-def make_mass(values: list[float], unit: MassUnit, prefix: MetricPrefix = MetricPrefix.NONE) -> Mass:
+def make_mass(
+    values: list[float], unit: MassUnit, prefix: MetricPrefix = MetricPrefix.NONE
+) -> Mass:
     return Mass(value=np.array(values), unit=unit, prefix=prefix)
 
 
@@ -38,12 +40,24 @@ def make_mass(values: list[float], unit: MassUnit, prefix: MetricPrefix = Metric
         (MassUnit.KAN, MetricPrefix.NONE, 1000 * 3.75, "kan"),
     ],
 )
-def test_conversion_factors_and_symbols(unit: MassUnit, prefix: MetricPrefix, grams: float, symbol: str) -> None:
+def test_conversion_factors_and_symbols(
+    unit: MassUnit, prefix: MetricPrefix, grams: float, symbol: str
+) -> None:
     assert unit.prefixed_factor(prefix) == pytest.approx(grams)
     assert unit.symbol(prefix) == symbol
 
 
-@pytest.mark.parametrize("unit", [MassUnit.POUND, MassUnit.OUNCE, MassUnit.CARAT, MassUnit.MOMME, MassUnit.KIN, MassUnit.KAN])
+@pytest.mark.parametrize(
+    "unit",
+    [
+        MassUnit.POUND,
+        MassUnit.OUNCE,
+        MassUnit.CARAT,
+        MassUnit.MOMME,
+        MassUnit.KIN,
+        MassUnit.KAN,
+    ],
+)
 def test_units_outside_the_metric_system_take_no_prefix(unit: MassUnit) -> None:
     with pytest.raises(ValueError, match="no prefix"):
         _ = make_mass([1.0], unit, MetricPrefix.KILO)
@@ -71,7 +85,9 @@ def test_named_unit_properties() -> None:
 
 @pytest.mark.parametrize("source", ALL_UNITS)
 @pytest.mark.parametrize("target", ALL_UNITS)
-def test_convert_unit_all_pairs(source: tuple[MassUnit, MetricPrefix], target: tuple[MassUnit, MetricPrefix]) -> None:
+def test_convert_unit_all_pairs(
+    source: tuple[MassUnit, MetricPrefix], target: tuple[MassUnit, MetricPrefix]
+) -> None:
     mass: Mass = make_mass([0.0, 1.0, 2.5], *source)
     expected_gram = mass.gram
     mass.convert_unit(*target)
@@ -96,7 +112,9 @@ def test_arithmetic() -> None:
 def test_string_representations() -> None:
     mass: Mass = make_mass([1.5], MassUnit.GRAM, MetricPrefix.KILO)
     assert str(mass) == "[1.5] kg"
-    assert repr(mass) == "Mass(value=[1.5], unit=MassUnit.GRAM, prefix=MetricPrefix.KILO)"
+    assert (
+        repr(mass) == "Mass(value=[1.5], unit=MassUnit.GRAM, prefix=MetricPrefix.KILO)"
+    )
 
 
 def test_equality_requires_a_mass_of_the_same_shape() -> None:

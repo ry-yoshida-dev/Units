@@ -5,6 +5,7 @@ import pytest
 
 from units import (
     MetricPrefix,
+    NumericArray,
     Pressure,
     PressureUnit,
     SoundPressureLevel,
@@ -13,7 +14,9 @@ from units import (
 
 
 def decibels(*values: float) -> SoundPressureLevel:
-    return SoundPressureLevel(value=np.array(values), unit=SoundPressureLevelUnit.DECIBEL)
+    return SoundPressureLevel(
+        value=np.array(values), unit=SoundPressureLevelUnit.DECIBEL
+    )
 
 
 def pascals(*values: float) -> Pressure:
@@ -28,7 +31,11 @@ def test_bel_is_ten_decibels() -> None:
 
 def test_level_takes_no_prefix() -> None:
     with pytest.raises(ValueError, match="no prefix"):
-        _ = SoundPressureLevel(value=np.array([1.0]), unit=SoundPressureLevelUnit.DECIBEL, prefix=MetricPrefix.KILO)
+        _ = SoundPressureLevel(
+            value=np.array([1.0]),
+            unit=SoundPressureLevelUnit.DECIBEL,
+            prefix=MetricPrefix.KILO,
+        )
 
 
 @pytest.mark.parametrize(
@@ -36,12 +43,15 @@ def test_level_takes_no_prefix() -> None:
     [(20e-6, 0.0), (2e-4, 20.0), (1.0, 93.97940009), (2e-6, -20.0)],
 )
 def test_pressure_and_level_convert_both_ways(pressure: float, level: float) -> None:
-    assert np.allclose(pascals(pressure).sound_pressure_level.decibel, np.array([level]))
+    assert np.allclose(
+        pascals(pressure).sound_pressure_level.decibel, np.array([level])
+    )
     assert np.allclose(decibels(level).pressure.pascal, np.array([pressure]))
 
 
 def test_zero_pressure_is_negative_infinity_without_a_warning() -> None:
-    assert np.isneginf(pascals(0.0).sound_pressure_level.decibel).all()
+    decibel: NumericArray = pascals(0.0).sound_pressure_level.decibel
+    assert np.all(np.isinf(decibel)) and np.all(decibel < 0)
 
 
 def test_negative_sound_pressure_is_rejected() -> None:
@@ -60,7 +70,7 @@ def test_subtraction_returns_the_difference_in_decibels() -> None:
 
 def test_level_has_no_scalar_product() -> None:
     with pytest.raises(TypeError):
-        _ = decibels(60.0) * 2.0  # type: ignore[operator]
+        _ = decibels(60.0) * 2.0  # type: ignore[operator]  # pyright: ignore[reportOperatorIssue, reportUnknownVariableType]
 
 
 def test_string_shows_the_symbol() -> None:

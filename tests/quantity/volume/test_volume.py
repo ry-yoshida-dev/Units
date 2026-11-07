@@ -18,7 +18,9 @@ ALL_UNITS: list[tuple[VolumeUnit, MetricPrefix]] = [
 ]
 
 
-def make_volume(values: list[float], unit: VolumeUnit, prefix: MetricPrefix = MetricPrefix.NONE) -> Volume:
+def make_volume(
+    values: list[float], unit: VolumeUnit, prefix: MetricPrefix = MetricPrefix.NONE
+) -> Volume:
     return Volume(value=np.array(values), unit=unit, prefix=prefix)
 
 
@@ -46,7 +48,13 @@ def test_prefix_is_raised_to_the_power_of_the_unit(
 
 @pytest.mark.parametrize(
     "unit",
-    [VolumeUnit.CUBIC_FOOT, VolumeUnit.US_GALLON, VolumeUnit.IMPERIAL_GALLON, VolumeUnit.GO, VolumeUnit.SHO],
+    [
+        VolumeUnit.CUBIC_FOOT,
+        VolumeUnit.US_GALLON,
+        VolumeUnit.IMPERIAL_GALLON,
+        VolumeUnit.GO,
+        VolumeUnit.SHO,
+    ],
 )
 def test_units_outside_the_metric_system_take_no_prefix(unit: VolumeUnit) -> None:
     with pytest.raises(ValueError, match="no prefix"):
@@ -100,9 +108,14 @@ def test_arithmetic() -> None:
 def test_string_representations() -> None:
     volume: Volume = make_volume([1.5], VolumeUnit.LITER, MetricPrefix.MILLI)
     assert str(volume) == "[1.5] mL"
-    assert repr(volume) == "Volume(value=[1.5], unit=VolumeUnit.LITER, prefix=MetricPrefix.MILLI)"
+    assert (
+        repr(volume)
+        == "Volume(value=[1.5], unit=VolumeUnit.LITER, prefix=MetricPrefix.MILLI)"
+    )
 
 
 def test_equality_requires_a_volume_of_the_same_shape() -> None:
-    assert make_volume([1.0], VolumeUnit.LITER) != make_volume([1.0, 1.0], VolumeUnit.LITER)
+    assert make_volume([1.0], VolumeUnit.LITER) != make_volume(
+        [1.0, 1.0], VolumeUnit.LITER
+    )
     assert make_volume([1.0], VolumeUnit.LITER) != "1 L"

@@ -27,6 +27,8 @@ print(parcel.hectare)  # [0.25]
 parcel.convert_unit(AreaUnit.ARE, MetricPrefix.HECTO)
 print(parcel)  # [0.25] ha
 
-city = Area(value=np.array([21.58]), unit=AreaUnit.SQUARE_METER, prefix=MetricPrefix.KILO)
+city = Area(
+    value=np.array([21.58]), unit=AreaUnit.SQUARE_METER, prefix=MetricPrefix.KILO
+)
 print(city.hectare)  # [2158.]
 ```

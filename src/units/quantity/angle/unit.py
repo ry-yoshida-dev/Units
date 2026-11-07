@@ -1,5 +1,7 @@
 import math
 
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -22,6 +24,7 @@ class AngleUnit(LinearUnit):
     TURN: AngleUnit
         The angle unit is turn, a full revolution of 360 degrees.
     """
+
     DEGREE = "degree"
     ARCMINUTE = "arcminute"
     ARCSECOND = "arcsecond"
@@ -30,6 +33,7 @@ class AngleUnit(LinearUnit):
     TURN = "turn"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of degrees in one unit.
@@ -55,16 +59,20 @@ class AngleUnit(LinearUnit):
 
     @property
     def as_upper(self) -> str:
+        """Return the symbol in upper case."""
         return str(self.value).upper()
 
     @property
     def as_lower(self) -> str:
+        """Return the symbol in lower case."""
         return str(self.value).lower()
 
     @property
     def is_degree(self) -> bool:
+        """Return whether this unit is the degree."""
         return self is AngleUnit.DEGREE
 
     @property
     def is_radian(self) -> bool:
+        """Return whether this unit is the radian."""
         return self is AngleUnit.RADIAN

@@ -23,7 +23,9 @@ def make_temperature(values: list[float], unit: TemperatureUnit) -> Temperature:
         (TemperatureUnit.RANKINE, 491.67, 273.15),
     ],
 )
-def test_conversion_to_kelvin(unit: TemperatureUnit, value: float, kelvin: float) -> None:
+def test_conversion_to_kelvin(
+    unit: TemperatureUnit, value: float, kelvin: float
+) -> None:
     assert np.allclose(make_temperature([value], unit).kelvin, np.array([kelvin]))
 
 
@@ -35,7 +37,9 @@ def test_named_unit_properties() -> None:
 
 
 def test_scales_cross_at_minus_forty() -> None:
-    assert make_temperature([-40.0], TemperatureUnit.CELSIUS) == make_temperature([-40.0], TemperatureUnit.FAHRENHEIT)
+    assert make_temperature([-40.0], TemperatureUnit.CELSIUS) == make_temperature(
+        [-40.0], TemperatureUnit.FAHRENHEIT
+    )
 
 
 @pytest.mark.parametrize(
@@ -47,14 +51,20 @@ def test_scales_cross_at_minus_forty() -> None:
         (TemperatureUnit.RANKINE, 0.0),
     ],
 )
-def test_absolute_zero_is_the_lower_bound(unit: TemperatureUnit, absolute_zero: float) -> None:
+def test_absolute_zero_is_the_lower_bound(
+    unit: TemperatureUnit, absolute_zero: float
+) -> None:
     assert np.allclose(make_temperature([absolute_zero], unit).kelvin, np.array([0.0]))
     with pytest.raises(ValueError, match="absolute zero"):
         _ = make_temperature([absolute_zero - 0.01], unit)
 
 
-@pytest.mark.parametrize(("source", "target"), list(itertools.product(TemperatureUnit, TemperatureUnit)))
-def test_convert_unit_all_pairs(source: TemperatureUnit, target: TemperatureUnit) -> None:
+@pytest.mark.parametrize(
+    ("source", "target"), list(itertools.product(TemperatureUnit, TemperatureUnit))
+)
+def test_convert_unit_all_pairs(
+    source: TemperatureUnit, target: TemperatureUnit
+) -> None:
     temperature: Temperature = make_temperature([300.0, 500.0], source)
     expected = temperature.kelvin
     temperature.convert_unit(target)
@@ -77,18 +87,23 @@ def test_convert_unit_to_same_unit_keeps_value() -> None:
 
 
 def test_subtraction_returns_the_difference_in_kelvin() -> None:
-    difference: NumericArray = make_temperature([212.0], TemperatureUnit.FAHRENHEIT) - make_temperature(
-        [0.0], TemperatureUnit.CELSIUS
-    )
+    difference: NumericArray = make_temperature(
+        [212.0], TemperatureUnit.FAHRENHEIT
+    ) - make_temperature([0.0], TemperatureUnit.CELSIUS)
     assert np.allclose(difference, np.array([100.0]))
 
 
 def test_string_representations() -> None:
     temperature: Temperature = make_temperature([1.5], TemperatureUnit.CELSIUS)
     assert str(temperature) == "[1.5] °C"
-    assert repr(temperature) == "Temperature(value=[1.5], unit=TemperatureUnit.CELSIUS, prefix=MetricPrefix.NONE)"
+    assert (
+        repr(temperature)
+        == "Temperature(value=[1.5], unit=TemperatureUnit.CELSIUS, prefix=MetricPrefix.NONE)"
+    )
 
 
 def test_equality_requires_a_temperature_of_the_same_shape() -> None:
-    assert make_temperature([1.0], TemperatureUnit.KELVIN) != make_temperature([1.0, 1.0], TemperatureUnit.KELVIN)
+    assert make_temperature([1.0], TemperatureUnit.KELVIN) != make_temperature(
+        [1.0, 1.0], TemperatureUnit.KELVIN
+    )
     assert make_temperature([1.0], TemperatureUnit.KELVIN) != "1 K"

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, overload
+
+from typing_extensions import Self, override
 
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
@@ -76,16 +78,16 @@ class Area(LinearQuantity[AreaUnit], base_unit=AreaUnit.SQUARE_METER, is_signed=
         """Return the area in cho."""
         return self.in_unit(AreaUnit.CHO)
 
-    @overload
-    def __mul__(self, other: float | NumericArray) -> Area: ...
+    # mypy forbids operator overrides that widen the operand types, which the
+    # products and quotients with other quantities must do.
+    @overload  # type: ignore[override]
+    def __mul__(self, other: float | NumericArray) -> Self: ...
 
     @overload
     def __mul__(self, other: Length) -> Volume: ...
 
-    @overload
-    def __mul__(self, other: Any) -> Any: ...
-
-    def __mul__(self, other: Any) -> Any:
+    @override
+    def __mul__(self, other: float | NumericArray | Length) -> Self | Volume:
         """
         Multiply by a length or a scalar.
 
@@ -104,22 +106,26 @@ class Area(LinearQuantity[AreaUnit], base_unit=AreaUnit.SQUARE_METER, is_signed=
         from ..volume import Volume
 
         if isinstance(other, Length):
-            return Volume.from_base(as_numeric_array(self.base_value * other.base_value))
+            return Volume.from_base(
+                as_numeric_array(self.base_value * other.base_value)
+            )
         return super().__mul__(other)
 
-    @overload
-    def __truediv__(self, other: float | NumericArray) -> Area: ...
+    # mypy forbids operator overrides that widen the operand types, which the
+    # products and quotients with other quantities must do.
+    @overload  # type: ignore[override]
+    def __truediv__(self, other: LinearQuantity[AreaUnit]) -> NumericArray: ...
 
     @overload
-    def __truediv__(self, other: Area) -> NumericArray: ...
+    def __truediv__(self, other: float | NumericArray) -> Self: ...
 
     @overload
     def __truediv__(self, other: Length) -> Length: ...
 
-    @overload
-    def __truediv__(self, other: Any) -> Any: ...
-
-    def __truediv__(self, other: Any) -> Any:
+    @override
+    def __truediv__(
+        self, other: LinearQuantity[AreaUnit] | float | NumericArray | Length
+    ) -> NumericArray | Self | Length:
         """
         Divide by an area, a length or a scalar.
 
@@ -137,5 +143,7 @@ class Area(LinearQuantity[AreaUnit], base_unit=AreaUnit.SQUARE_METER, is_signed=
         from ..length import Length
 
         if isinstance(other, Length):
-            return Length.from_base(as_numeric_array(self.base_value / other.base_value))
+            return Length.from_base(
+                as_numeric_array(self.base_value / other.base_value)
+            )
         return super().__truediv__(other)

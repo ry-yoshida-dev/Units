@@ -21,11 +21,7 @@ classifiers = [
 ]
 dependencies = [
     "numpy",
-]
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
+    "typing-extensions>=4.4",
 ]
 
 [project.urls]
@@ -45,3 +41,35 @@ addopts = ["--import-mode=importlib"]
 
 [tool.uv]
 exclude-newer = "7 days"
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.40.2",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
+]
+
+[tool.mypy]
+files = ["src", "tests"]
+strict = true
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "D"]
+# Only public classes, methods, and functions need docstrings, and multi-line ones are the local style.
+ignore = ["E501", "D100", "D104", "D105", "D200"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+
+[tool.basedpyright]
+# The quantities refer to one another for their products and quotients (a length
+# times a length is an area, an area divided by a length is a length), so the
+# subpackages import each other by design.
+reportImportCycles = false

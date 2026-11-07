@@ -39,7 +39,9 @@ def seconds(*values: float) -> Time:
 
 
 def test_length_times_length_is_area() -> None:
-    kilometer = Length(value=np.array([1.0]), unit=LengthUnit.M, prefix=MetricPrefix.KILO)
+    kilometer = Length(
+        value=np.array([1.0]), unit=LengthUnit.M, prefix=MetricPrefix.KILO
+    )
     area = kilometer * meters(2.0)
     assert isinstance(area, Area)
     assert area == square_meters(2000.0)
@@ -70,14 +72,18 @@ def test_volume_divided_by_length_is_area() -> None:
 
 
 def test_length_divided_by_time_is_speed() -> None:
-    kilometers = Length(value=np.array([100.0]), unit=LengthUnit.M, prefix=MetricPrefix.KILO)
+    kilometers = Length(
+        value=np.array([100.0]), unit=LengthUnit.M, prefix=MetricPrefix.KILO
+    )
     speed = kilometers / Time(value=np.array([2.0]), unit=TimeUnit.HR)
     assert isinstance(speed, Speed)
     assert np.allclose(speed.kilometer_per_hour, np.array([50.0]))
 
 
 def test_length_divided_by_speed_is_time() -> None:
-    duration = meters(100.0) / Speed(value=np.array([5.0]), unit=SpeedUnit.METER_PER_SECOND)
+    duration = meters(100.0) / Speed(
+        value=np.array([5.0]), unit=SpeedUnit.METER_PER_SECOND
+    )
     assert isinstance(duration, Time)
     assert duration == seconds(20.0)
 
@@ -138,21 +144,21 @@ def test_frequency_times_time_is_the_number_of_cycles_in_either_order() -> None:
 
 def test_addition_and_subtraction_of_different_quantities_are_rejected() -> None:
     with pytest.raises(TypeError):
-        _ = meters(1.0) + grams(1.0)  # type: ignore[operator]
+        _ = meters(1.0) + grams(1.0)  # type: ignore[operator]  # pyright: ignore[reportOperatorIssue, reportUnknownVariableType]
     with pytest.raises(TypeError):
-        _ = meters(1.0) - grams(1.0)  # type: ignore[operator]
+        _ = meters(1.0) - grams(1.0)  # type: ignore[operator]  # pyright: ignore[reportOperatorIssue, reportUnknownVariableType]
 
 
 def test_multiplication_without_a_defined_result_is_rejected() -> None:
     with pytest.raises(TypeError):
-        _ = meters(1.0) * grams(1.0)
+        _ = meters(1.0) * grams(1.0)  # type: ignore[operator]  # pyright: ignore[reportOperatorIssue, reportUnknownVariableType]
     with pytest.raises(TypeError):
-        _ = grams(1.0) * grams(1.0)
+        _ = grams(1.0) * grams(1.0)  # type: ignore[operator]  # pyright: ignore[reportOperatorIssue, reportUnknownVariableType]
 
 
 def test_division_without_a_defined_result_is_rejected() -> None:
     with pytest.raises(TypeError):
-        _ = meters(1.0) / grams(1.0)
+        _ = meters(1.0) / grams(1.0)  # type: ignore[operator]  # pyright: ignore[reportOperatorIssue, reportUnknownVariableType]
 
 
 def test_different_quantities_with_equal_base_values_are_not_equal() -> None:
@@ -162,6 +168,6 @@ def test_different_quantities_with_equal_base_values_are_not_equal() -> None:
 def test_negative_speed_has_no_wavelength_or_frequency() -> None:
     speed = Speed(value=np.array([-1.0]), unit=SpeedUnit.METER_PER_SECOND)
     with pytest.raises(ValueError, match="must not be negative"):
-        speed / Frequency(value=np.array([1.0]), unit=FrequencyUnit.HERTZ)
+        _ = speed / Frequency(value=np.array([1.0]), unit=FrequencyUnit.HERTZ)
     with pytest.raises(ValueError, match="must not be negative"):
-        speed / Length(value=np.array([1.0]), unit=LengthUnit.M)
+        _ = speed / Length(value=np.array([1.0]), unit=LengthUnit.M)

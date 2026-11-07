@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, overload
+
+from typing_extensions import Self, override
 
 from ...prefix import MetricPrefix
 from ...types import NumericArray
@@ -61,8 +63,10 @@ class Time(LinearQuantity[TimeUnit], base_unit=TimeUnit.S):
         """Return the duration in weeks."""
         return self.in_unit(TimeUnit.WEEK)
 
-    @overload
-    def __mul__(self, other: float | NumericArray) -> Time: ...
+    # mypy forbids operator overrides that widen the operand types, which the
+    # products and quotients with other quantities must do.
+    @overload  # type: ignore[override]
+    def __mul__(self, other: float | NumericArray) -> Self: ...
 
     @overload
     def __mul__(self, other: Speed) -> Length: ...
@@ -70,10 +74,10 @@ class Time(LinearQuantity[TimeUnit], base_unit=TimeUnit.S):
     @overload
     def __mul__(self, other: Frequency) -> NumericArray: ...
 
-    @overload
-    def __mul__(self, other: Any) -> Any: ...
-
-    def __mul__(self, other: Any) -> Any:
+    @override
+    def __mul__(
+        self, other: float | NumericArray | Speed | Frequency
+    ) -> Self | Length | NumericArray:
         """
         Multiply by a speed, a frequency or a scalar.
 

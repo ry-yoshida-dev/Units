@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
 from ..unit import Unit
@@ -61,10 +63,18 @@ class TemperatureUnit(Unit):
             case TemperatureUnit.FAHRENHEIT | TemperatureUnit.RANKINE:
                 return 5.0 / 9.0
 
-    def to_base(self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE) -> NumericArray:
+    @override
+    def to_base(
+        self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE
+    ) -> NumericArray:
         self.validate_prefix(prefix)
-        return as_numeric_array((value + self.offset_to_absolute) * self.to_kelvin_scale)
+        return as_numeric_array(
+            (value + self.offset_to_absolute) * self.to_kelvin_scale
+        )
 
-    def from_base(self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE) -> NumericArray:
+    @override
+    def from_base(
+        self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE
+    ) -> NumericArray:
         self.validate_prefix(prefix)
         return as_numeric_array(value / self.to_kelvin_scale - self.offset_to_absolute)

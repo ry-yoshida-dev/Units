@@ -102,5 +102,7 @@ class Pressure(LinearQuantity[PressureUnit], base_unit=PressureUnit.PASCAL):
             raise ValueError("Effective sound pressure must not be negative")
         with np.errstate(divide="ignore"):
             return SoundPressureLevel.from_base(
-                as_numeric_array(20.0 * np.log10(self.base_value / REFERENCE_SOUND_PRESSURE_PASCAL))
+                as_numeric_array(
+                    20.0 * np.log10(self.base_value / REFERENCE_SOUND_PRESSURE_PASCAL)
+                )
             )

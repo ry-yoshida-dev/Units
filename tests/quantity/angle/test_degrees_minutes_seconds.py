@@ -16,12 +16,17 @@ def make_sexagesimal(
         degrees=np.array(degrees),
         minutes=np.array(minutes),
         seconds=np.array(seconds),
-        is_negative=np.array([False] * len(degrees) if is_negative is None else is_negative, dtype=np.bool_),
+        is_negative=np.array(
+            [False] * len(degrees) if is_negative is None else is_negative,
+            dtype=np.bool_,
+        ),
     )
 
 
 def test_keeps_canonical_components() -> None:
-    sexagesimal: DegreesMinutesSeconds = make_sexagesimal([35.0, 0.0], [40.0, 59.0], [30.36, 59.999])
+    sexagesimal: DegreesMinutesSeconds = make_sexagesimal(
+        [35.0, 0.0], [40.0, 59.0], [30.36, 59.999]
+    )
     assert np.array_equal(sexagesimal.degrees, np.array([35.0, 0.0]))
     assert np.array_equal(sexagesimal.minutes, np.array([40.0, 59.0]))
     assert np.array_equal(sexagesimal.seconds, np.array([30.36, 59.999]))
@@ -45,11 +50,13 @@ def test_accepts_empty_arrays() -> None:
 def test_is_immutable() -> None:
     sexagesimal: DegreesMinutesSeconds = make_sexagesimal([1.0], [0.0], [0.0])
     with pytest.raises(AttributeError):
-        setattr(sexagesimal, "degrees", np.array([2.0]))
+        sexagesimal.degrees = np.array([2.0])  # type: ignore[misc]  # pyright: ignore[reportAttributeAccessIssue]
 
 
 def test_keeps_sign() -> None:
-    sexagesimal: DegreesMinutesSeconds = make_sexagesimal([1.0, 2.0], [0.0, 0.0], [0.0, 0.0], [True, False])
+    sexagesimal: DegreesMinutesSeconds = make_sexagesimal(
+        [1.0, 2.0], [0.0, 0.0], [0.0, 0.0], [True, False]
+    )
     assert np.array_equal(sexagesimal.is_negative, np.array([True, False]))
 
 
@@ -86,7 +93,9 @@ def test_rejects_non_1d_arrays() -> None:
         ([1.0], [30.0], [0.0, 1.0]),
     ],
 )
-def test_rejects_shape_mismatch(degrees: list[float], minutes: list[float], seconds: list[float]) -> None:
+def test_rejects_shape_mismatch(
+    degrees: list[float], minutes: list[float], seconds: list[float]
+) -> None:
     with pytest.raises(ValueError, match="same shape"):
         _ = make_sexagesimal(degrees, minutes, seconds)
 
@@ -100,7 +109,9 @@ def test_rejects_shape_mismatch(degrees: list[float], minutes: list[float], seco
         ([1.0, -1.0], [0.0, 0.0], [0.0, 0.0]),
     ],
 )
-def test_rejects_negative(degrees: list[float], minutes: list[float], seconds: list[float]) -> None:
+def test_rejects_negative(
+    degrees: list[float], minutes: list[float], seconds: list[float]
+) -> None:
     with pytest.raises(ValueError, match="non-negative"):
         _ = make_sexagesimal(degrees, minutes, seconds)
 
@@ -112,7 +123,9 @@ def test_rejects_negative(degrees: list[float], minutes: list[float], seconds: l
         ([35.0], [40.5]),
     ],
 )
-def test_rejects_fractional_degrees_or_minutes(degrees: list[float], minutes: list[float]) -> None:
+def test_rejects_fractional_degrees_or_minutes(
+    degrees: list[float], minutes: list[float]
+) -> None:
     with pytest.raises(ValueError, match="whole numbers"):
         _ = make_sexagesimal(degrees, minutes, [0.0])
 
@@ -220,7 +233,9 @@ def test_normalized_rejects_sign_shape_mismatch() -> None:
     ],
 )
 def test_total_seconds(is_negative: list[bool], expected: list[float]) -> None:
-    sexagesimal: DegreesMinutesSeconds = make_sexagesimal([1.0, 0.0], [2.0, 0.0], [3.5, 0.0], is_negative)
+    sexagesimal: DegreesMinutesSeconds = make_sexagesimal(
+        [1.0, 0.0], [2.0, 0.0], [3.5, 0.0], is_negative
+    )
     assert np.allclose(sexagesimal.total_seconds, np.array(expected))
 
 
@@ -230,19 +245,27 @@ def test_equality_compares_signed_value() -> None:
         minutes=np.array([0.0]),
         seconds=np.array([0.0]),
     )
-    assert make_sexagesimal([1.0, 2.0], [0.0, 0.0], [0.0, 0.0]) == make_sexagesimal([1.0, 2.0], [0.0, 0.0], [0.0, 0.0])
+    assert make_sexagesimal([1.0, 2.0], [0.0, 0.0], [0.0, 0.0]) == make_sexagesimal(
+        [1.0, 2.0], [0.0, 0.0], [0.0, 0.0]
+    )
 
 
 def test_equality_treats_signed_zero_as_equal() -> None:
-    assert make_sexagesimal([0.0], [0.0], [0.0], [True]) == make_sexagesimal([0.0], [0.0], [0.0], [False])
+    assert make_sexagesimal([0.0], [0.0], [0.0], [True]) == make_sexagesimal(
+        [0.0], [0.0], [0.0], [False]
+    )
 
 
 def test_inequality_on_different_sign() -> None:
-    assert make_sexagesimal([1.0], [0.0], [0.0], [True]) != make_sexagesimal([1.0], [0.0], [0.0], [False])
+    assert make_sexagesimal([1.0], [0.0], [0.0], [True]) != make_sexagesimal(
+        [1.0], [0.0], [0.0], [False]
+    )
 
 
 def test_inequality_on_different_shapes() -> None:
-    assert make_sexagesimal([1.0], [0.0], [0.0]) != make_sexagesimal([1.0, 1.0], [0.0, 0.0], [0.0, 0.0])
+    assert make_sexagesimal([1.0], [0.0], [0.0]) != make_sexagesimal(
+        [1.0, 1.0], [0.0, 0.0], [0.0, 0.0]
+    )
 
 
 def test_inequality_with_other_types() -> None:

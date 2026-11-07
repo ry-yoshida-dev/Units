@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, overload
+
+from typing_extensions import Self, override
 
 from ...types import NumericArray, as_numeric_array
 from ..length import Length
@@ -14,8 +16,9 @@ if TYPE_CHECKING:
 
 class Speed(LinearQuantity[SpeedUnit], base_unit=SpeedUnit.METER_PER_SECOND):
     """
-    Container class for speeds, which may be negative as a signed velocity along an axis
-    or the difference of two speeds.
+    Container class for speeds, which may be negative.
+
+    A negative speed is a signed velocity along an axis or the difference of two speeds.
     """
 
     @property
@@ -43,16 +46,16 @@ class Speed(LinearQuantity[SpeedUnit], base_unit=SpeedUnit.METER_PER_SECOND):
         """Return the speed in knots."""
         return self.in_unit(SpeedUnit.KNOT)
 
-    @overload
-    def __mul__(self, other: float | NumericArray) -> Speed: ...
+    # mypy forbids operator overrides that widen the operand types, which the
+    # products and quotients with other quantities must do.
+    @overload  # type: ignore[override]
+    def __mul__(self, other: float | NumericArray) -> Self: ...
 
     @overload
     def __mul__(self, other: Time) -> Length: ...
 
-    @overload
-    def __mul__(self, other: Any) -> Any: ...
-
-    def __mul__(self, other: Any) -> Any:
+    @override
+    def __mul__(self, other: float | NumericArray | Time) -> Self | Length:
         """
         Multiply by a duration or a scalar.
 
@@ -72,14 +75,18 @@ class Speed(LinearQuantity[SpeedUnit], base_unit=SpeedUnit.METER_PER_SECOND):
             If the distance covered is negative.
         """
         if isinstance(other, Time):
-            return Length.from_base(as_numeric_array(self.base_value * other.base_value))
+            return Length.from_base(
+                as_numeric_array(self.base_value * other.base_value)
+            )
         return super().__mul__(other)
 
-    @overload
-    def __truediv__(self, other: float | NumericArray) -> Speed: ...
+    # mypy forbids operator overrides that widen the operand types, which the
+    # products and quotients with other quantities must do.
+    @overload  # type: ignore[override]
+    def __truediv__(self, other: LinearQuantity[SpeedUnit]) -> NumericArray: ...
 
     @overload
-    def __truediv__(self, other: Speed) -> NumericArray: ...
+    def __truediv__(self, other: float | NumericArray) -> Self: ...
 
     @overload
     def __truediv__(self, other: Frequency) -> Length: ...
@@ -87,10 +94,11 @@ class Speed(LinearQuantity[SpeedUnit], base_unit=SpeedUnit.METER_PER_SECOND):
     @overload
     def __truediv__(self, other: Length) -> Frequency: ...
 
-    @overload
-    def __truediv__(self, other: Any) -> Any: ...
-
-    def __truediv__(self, other: Any) -> Any:
+    @override
+    def __truediv__(
+        self,
+        other: LinearQuantity[SpeedUnit] | float | NumericArray | Frequency | Length,
+    ) -> NumericArray | Self | Length | Frequency:
         """
         Divide by a speed, a frequency, a length or a scalar.
 
@@ -115,7 +123,11 @@ class Speed(LinearQuantity[SpeedUnit], base_unit=SpeedUnit.METER_PER_SECOND):
         from ..frequency import Frequency
 
         if isinstance(other, Frequency):
-            return Length.from_base(as_numeric_array(self.base_value / other.base_value))
+            return Length.from_base(
+                as_numeric_array(self.base_value / other.base_value)
+            )
         if isinstance(other, Length):
-            return Frequency.from_base(as_numeric_array(self.base_value / other.base_value))
+            return Frequency.from_base(
+                as_numeric_array(self.base_value / other.base_value)
+            )
         return super().__truediv__(other)

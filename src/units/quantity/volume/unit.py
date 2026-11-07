@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -35,6 +37,7 @@ class VolumeUnit(LinearUnit):
     SHO = "sho"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of cubic meters in one of this unit, without a prefix.
@@ -61,6 +64,7 @@ class VolumeUnit(LinearUnit):
                 return 2401 / 1331000
 
     @property
+    @override
     def prefix_power(self) -> int:
         """
         Return the power a prefix is raised to when scaling this unit.
@@ -73,6 +77,7 @@ class VolumeUnit(LinearUnit):
         return 3 if self is VolumeUnit.CUBIC_METER else 1
 
     @property
+    @override
     def is_prefixable(self) -> bool:
         """
         Return whether this unit takes an SI prefix.

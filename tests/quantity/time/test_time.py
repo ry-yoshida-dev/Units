@@ -18,7 +18,9 @@ SECONDS_PER_UNIT: dict[TimeUnit, float] = {
 }
 
 
-def make_time(values: list[float], unit: TimeUnit, prefix: MetricPrefix = MetricPrefix.NONE) -> Time:
+def make_time(
+    values: list[float], unit: TimeUnit, prefix: MetricPrefix = MetricPrefix.NONE
+) -> Time:
     return Time(value=np.array(values), unit=unit, prefix=prefix)
 
 
@@ -31,7 +33,9 @@ def make_time(values: list[float], unit: TimeUnit, prefix: MetricPrefix = Metric
         (MetricPrefix.NANO, 1e-9, "ns"),
     ],
 )
-def test_prefix_scales_the_second(prefix: MetricPrefix, seconds: float, symbol: str) -> None:
+def test_prefix_scales_the_second(
+    prefix: MetricPrefix, seconds: float, symbol: str
+) -> None:
     assert TimeUnit.S.prefixed_factor(prefix) == pytest.approx(seconds)
     assert TimeUnit.S.symbol(prefix) == symbol
 
@@ -139,7 +143,9 @@ def test_multiplication_by_array_is_elementwise() -> None:
 
 
 def test_division_by_time_returns_ratio() -> None:
-    ratio: Time | NumericArray = make_time([1.0], TimeUnit.HR) / make_time([1800.0], TimeUnit.S)
+    ratio: Time | NumericArray = make_time([1.0], TimeUnit.HR) / make_time(
+        [1800.0], TimeUnit.S
+    )
     assert isinstance(ratio, np.ndarray)
     assert np.allclose(ratio, np.array([2.0]))
 
@@ -152,13 +158,17 @@ def test_division_by_scalar_keeps_unit() -> None:
 
 
 def test_division_by_array_is_elementwise() -> None:
-    quotient: Time | NumericArray = make_time([4.0, 9.0], TimeUnit.S) / np.array([2.0, 3.0])
+    quotient: Time | NumericArray = make_time([4.0, 9.0], TimeUnit.S) / np.array(
+        [2.0, 3.0]
+    )
     assert isinstance(quotient, Time)
     assert np.allclose(quotient.value, np.array([2.0, 3.0]))
 
 
 def test_equality_across_units() -> None:
-    assert make_time([1000.0], TimeUnit.S, MetricPrefix.MILLI) == make_time([1.0], TimeUnit.S)
+    assert make_time([1000.0], TimeUnit.S, MetricPrefix.MILLI) == make_time(
+        [1.0], TimeUnit.S
+    )
     assert make_time([1.0], TimeUnit.DAY) == make_time([24.0], TimeUnit.HR)
 
 
@@ -177,4 +187,6 @@ def test_inequality_with_other_types() -> None:
 def test_string_representations() -> None:
     duration: Time = make_time([2.0], TimeUnit.HR)
     assert str(duration) == "[2.] h"
-    assert repr(duration) == "Time(value=[2.], unit=TimeUnit.HR, prefix=MetricPrefix.NONE)"
+    assert (
+        repr(duration) == "Time(value=[2.], unit=TimeUnit.HR, prefix=MetricPrefix.NONE)"
+    )

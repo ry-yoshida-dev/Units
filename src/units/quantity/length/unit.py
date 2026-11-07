@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -44,6 +46,7 @@ class LengthUnit(LinearUnit):
     RI = "ri"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of meters in one of this unit, without a prefix.
@@ -76,6 +79,7 @@ class LengthUnit(LinearUnit):
                 return 43200 / 11
 
     @property
+    @override
     def is_prefixable(self) -> bool:
         """
         Return whether this unit takes an SI prefix.

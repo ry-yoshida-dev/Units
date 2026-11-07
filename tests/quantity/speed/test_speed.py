@@ -35,10 +35,15 @@ def test_named_unit_properties() -> None:
 
 
 def test_negative_speed_is_allowed() -> None:
-    assert np.allclose(make_speed([-3.6], SpeedUnit.KILOMETER_PER_HOUR).meter_per_second, np.array([-1.0]))
+    assert np.allclose(
+        make_speed([-3.6], SpeedUnit.KILOMETER_PER_HOUR).meter_per_second,
+        np.array([-1.0]),
+    )
 
 
-@pytest.mark.parametrize(("source", "target"), list(itertools.product(SpeedUnit, SpeedUnit)))
+@pytest.mark.parametrize(
+    ("source", "target"), list(itertools.product(SpeedUnit, SpeedUnit))
+)
 def test_convert_unit_all_pairs(source: SpeedUnit, target: SpeedUnit) -> None:
     speed: Speed = make_speed([0.0, 1.0, 2.5], source)
     expected = speed.meter_per_second
@@ -65,7 +70,10 @@ def test_arithmetic() -> None:
 def test_string_representations() -> None:
     speed: Speed = make_speed([1.5], SpeedUnit.KNOT)
     assert str(speed) == "[1.5] kn"
-    assert repr(speed) == "Speed(value=[1.5], unit=SpeedUnit.KNOT, prefix=MetricPrefix.NONE)"
+    assert (
+        repr(speed)
+        == "Speed(value=[1.5], unit=SpeedUnit.KNOT, prefix=MetricPrefix.NONE)"
+    )
 
 
 def test_equality_requires_a_speed_of_the_same_shape() -> None:

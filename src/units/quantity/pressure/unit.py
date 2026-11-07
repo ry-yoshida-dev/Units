@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -36,6 +38,7 @@ class PressureUnit(LinearUnit):
     POUND_PER_SQUARE_INCH = "psi"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of pascals in one of this unit, without a prefix.
@@ -62,6 +65,7 @@ class PressureUnit(LinearUnit):
                 return 0.45359237 * 9.80665 / 0.0254**2
 
     @property
+    @override
     def is_prefixable(self) -> bool:
         """
         Return whether this unit takes an SI prefix.

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, overload
+
+from typing_extensions import Self, override
 
 from ...prefix import MetricPrefix
 from ...types import NumericArray, as_numeric_array
@@ -98,8 +100,10 @@ class Length(LinearQuantity[LengthUnit], base_unit=LengthUnit.M, is_signed=False
         """Return the length in ri."""
         return self.in_unit(LengthUnit.RI)
 
-    @overload
-    def __mul__(self, other: float | NumericArray) -> Length: ...
+    # mypy forbids operator overrides that widen the operand types, which the
+    # products and quotients with other quantities must do.
+    @overload  # type: ignore[override]
+    def __mul__(self, other: float | NumericArray) -> Self: ...
 
     @overload
     def __mul__(self, other: Length) -> Area: ...
@@ -110,10 +114,10 @@ class Length(LinearQuantity[LengthUnit], base_unit=LengthUnit.M, is_signed=False
     @overload
     def __mul__(self, other: Frequency) -> Speed: ...
 
-    @overload
-    def __mul__(self, other: Any) -> Any: ...
-
-    def __mul__(self, other: Any) -> Any:
+    @override
+    def __mul__(
+        self, other: float | NumericArray | Length | Area | Frequency
+    ) -> Self | Area | Volume | Speed:
         """
         Multiply by a length, an area, a frequency or a scalar.
 
@@ -137,16 +141,20 @@ class Length(LinearQuantity[LengthUnit], base_unit=LengthUnit.M, is_signed=False
         if isinstance(other, Length):
             return Area.from_base(as_numeric_array(self.base_value * other.base_value))
         if isinstance(other, Area):
-            return Volume.from_base(as_numeric_array(self.base_value * other.base_value))
+            return Volume.from_base(
+                as_numeric_array(self.base_value * other.base_value)
+            )
         if isinstance(other, Frequency):
             return Speed.from_base(as_numeric_array(self.base_value * other.base_value))
         return super().__mul__(other)
 
-    @overload
-    def __truediv__(self, other: float | NumericArray) -> Length: ...
+    # mypy forbids operator overrides that widen the operand types, which the
+    # products and quotients with other quantities must do.
+    @overload  # type: ignore[override]
+    def __truediv__(self, other: LinearQuantity[LengthUnit]) -> NumericArray: ...
 
     @overload
-    def __truediv__(self, other: Length) -> NumericArray: ...
+    def __truediv__(self, other: float | NumericArray) -> Self: ...
 
     @overload
     def __truediv__(self, other: Time) -> Speed: ...
@@ -154,10 +162,10 @@ class Length(LinearQuantity[LengthUnit], base_unit=LengthUnit.M, is_signed=False
     @overload
     def __truediv__(self, other: Speed) -> Time: ...
 
-    @overload
-    def __truediv__(self, other: Any) -> Any: ...
-
-    def __truediv__(self, other: Any) -> Any:
+    @override
+    def __truediv__(
+        self, other: LinearQuantity[LengthUnit] | float | NumericArray | Time | Speed
+    ) -> NumericArray | Self | Speed | Time:
         """
         Divide by a length, a duration, a speed or a scalar.
 

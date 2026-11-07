@@ -23,7 +23,9 @@ METERS_PER_UNIT: dict[LengthUnit, float] = {
 }
 
 
-def make_length(values: list[float], unit: LengthUnit, prefix: MetricPrefix = MetricPrefix.NONE) -> Length:
+def make_length(
+    values: list[float], unit: LengthUnit, prefix: MetricPrefix = MetricPrefix.NONE
+) -> Length:
     return Length(value=np.array(values), unit=unit, prefix=prefix)
 
 
@@ -38,12 +40,16 @@ def make_length(values: list[float], unit: LengthUnit, prefix: MetricPrefix = Me
         (MetricPrefix.NANO, 1e-9, "nm"),
     ],
 )
-def test_prefix_scales_the_meter(prefix: MetricPrefix, meters: float, symbol: str) -> None:
+def test_prefix_scales_the_meter(
+    prefix: MetricPrefix, meters: float, symbol: str
+) -> None:
     assert LengthUnit.M.prefixed_factor(prefix) == pytest.approx(meters)
     assert LengthUnit.M.symbol(prefix) == symbol
 
 
-@pytest.mark.parametrize("unit", [unit for unit in LengthUnit if unit is not LengthUnit.M])
+@pytest.mark.parametrize(
+    "unit", [unit for unit in LengthUnit if unit is not LengthUnit.M]
+)
 def test_only_the_meter_takes_a_prefix(unit: LengthUnit) -> None:
     with pytest.raises(ValueError, match="no prefix"):
         _ = make_length([1.0], unit, MetricPrefix.KILO)
@@ -96,7 +102,9 @@ def test_named_unit_properties() -> None:
     ("source_unit", "target_unit"),
     list(itertools.product(ALL_LENGTH_UNITS, ALL_LENGTH_UNITS)),
 )
-def test_convert_unit_all_pairs(source_unit: LengthUnit, target_unit: LengthUnit) -> None:
+def test_convert_unit_all_pairs(
+    source_unit: LengthUnit, target_unit: LengthUnit
+) -> None:
     length: Length = make_length([0.0, 1.0, 2.5], source_unit)
     expected_meter: NumericArray = length.meter
     length.convert_unit(target_unit)
@@ -114,7 +122,9 @@ def test_convert_unit_changes_the_prefix() -> None:
 
 def test_convert_unit_rejects_a_prefix_the_unit_does_not_take() -> None:
     with pytest.raises(ValueError, match="no prefix"):
-        make_length([1.0], LengthUnit.M).convert_unit(LengthUnit.INCH, MetricPrefix.KILO)
+        make_length([1.0], LengthUnit.M).convert_unit(
+            LengthUnit.INCH, MetricPrefix.KILO
+        )
 
 
 def test_convert_unit_defaults_to_meter() -> None:
@@ -132,13 +142,17 @@ def test_convert_unit_to_same_unit_keeps_value() -> None:
 
 
 def test_addition_mixes_units_and_returns_meter() -> None:
-    total: Length = make_length([1.0], LengthUnit.M) + make_length([100.0], LengthUnit.M, MetricPrefix.CENTI)
+    total: Length = make_length([1.0], LengthUnit.M) + make_length(
+        [100.0], LengthUnit.M, MetricPrefix.CENTI
+    )
     assert total.unit == LengthUnit.M
     assert np.allclose(total.value, np.array([2.0]))
 
 
 def test_subtraction_mixes_units_and_returns_meter() -> None:
-    difference: Length = make_length([1.0], LengthUnit.M, MetricPrefix.KILO) - make_length([250.0], LengthUnit.M)
+    difference: Length = make_length(
+        [1.0], LengthUnit.M, MetricPrefix.KILO
+    ) - make_length([250.0], LengthUnit.M)
     assert difference.unit == LengthUnit.M
     assert np.allclose(difference.value, np.array([750.0]))
 
@@ -167,13 +181,17 @@ def test_multiplication_by_negative_scalar_is_rejected() -> None:
 
 
 def test_division_by_length_returns_ratio() -> None:
-    ratio: Length | NumericArray = make_length([1.0], LengthUnit.M) / make_length([50.0], LengthUnit.M, MetricPrefix.CENTI)
+    ratio: Length | NumericArray = make_length([1.0], LengthUnit.M) / make_length(
+        [50.0], LengthUnit.M, MetricPrefix.CENTI
+    )
     assert isinstance(ratio, np.ndarray)
     assert np.allclose(ratio, np.array([2.0]))
 
 
 def test_division_by_scalar_keeps_unit() -> None:
-    quotient: Length | NumericArray = make_length([3.0], LengthUnit.M, MetricPrefix.KILO) / 2.0
+    quotient: Length | NumericArray = (
+        make_length([3.0], LengthUnit.M, MetricPrefix.KILO) / 2.0
+    )
     assert isinstance(quotient, Length)
     assert quotient.unit == LengthUnit.M
     assert quotient.prefix is MetricPrefix.KILO
@@ -181,14 +199,20 @@ def test_division_by_scalar_keeps_unit() -> None:
 
 
 def test_division_by_array_is_elementwise() -> None:
-    quotient: Length | NumericArray = make_length([4.0, 9.0], LengthUnit.M) / np.array([2.0, 3.0])
+    quotient: Length | NumericArray = make_length([4.0, 9.0], LengthUnit.M) / np.array(
+        [2.0, 3.0]
+    )
     assert isinstance(quotient, Length)
     assert np.allclose(quotient.value, np.array([2.0, 3.0]))
 
 
 def test_equality_across_units() -> None:
-    assert make_length([1.0], LengthUnit.M, MetricPrefix.KILO) == make_length([1000.0], LengthUnit.M)
-    assert make_length([1.0], LengthUnit.INCH) == make_length([25.4], LengthUnit.M, MetricPrefix.MILLI)
+    assert make_length([1.0], LengthUnit.M, MetricPrefix.KILO) == make_length(
+        [1000.0], LengthUnit.M
+    )
+    assert make_length([1.0], LengthUnit.INCH) == make_length(
+        [25.4], LengthUnit.M, MetricPrefix.MILLI
+    )
 
 
 def test_inequality_on_different_values() -> None:
@@ -196,7 +220,9 @@ def test_inequality_on_different_values() -> None:
 
 
 def test_inequality_on_different_shapes() -> None:
-    assert make_length([1.0], LengthUnit.M) != make_length([1.0, 1.0, 1.0], LengthUnit.M)
+    assert make_length([1.0], LengthUnit.M) != make_length(
+        [1.0, 1.0, 1.0], LengthUnit.M
+    )
 
 
 def test_inequality_with_other_types() -> None:
@@ -206,4 +232,7 @@ def test_inequality_with_other_types() -> None:
 def test_string_representations() -> None:
     length: Length = make_length([2.0], LengthUnit.M, MetricPrefix.KILO)
     assert str(length) == "[2.] km"
-    assert repr(length) == "Length(value=[2.], unit=LengthUnit.M, prefix=MetricPrefix.KILO)"
+    assert (
+        repr(length)
+        == "Length(value=[2.], unit=LengthUnit.M, prefix=MetricPrefix.KILO)"
+    )

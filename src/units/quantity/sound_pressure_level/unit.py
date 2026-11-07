@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -17,6 +19,7 @@ class SoundPressureLevelUnit(LinearUnit):
     BEL = "B"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of decibels in one of this unit.

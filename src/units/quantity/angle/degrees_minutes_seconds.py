@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 import numpy as np
 from numpy.typing import NDArray
+from typing_extensions import override
 
 from ...types import NumericArray, as_numeric_array
 
@@ -43,6 +44,7 @@ class DegreesMinutesSeconds:
         numbers, or if any minute or second is 60 or greater. Use
         ``normalized`` to carry overflowing or fractional components instead.
     """
+
     degrees: NumericArray
     minutes: NumericArray
     seconds: NumericArray
@@ -53,13 +55,28 @@ class DegreesMinutesSeconds:
             raise TypeError("is_negative must be a boolean array")
         if self.degrees.ndim != 1:
             raise ValueError("Degrees, minutes and seconds must be 1D arrays")
-        if not self.degrees.shape == self.minutes.shape == self.seconds.shape == self.is_negative.shape:
-            raise ValueError("Degrees, minutes, seconds and is_negative must have the same shape")
-        if np.any(self.degrees < 0) or np.any(self.minutes < 0) or np.any(self.seconds < 0):
+        if (
+            not self.degrees.shape
+            == self.minutes.shape
+            == self.seconds.shape
+            == self.is_negative.shape
+        ):
+            raise ValueError(
+                "Degrees, minutes, seconds and is_negative must have the same shape"
+            )
+        if (
+            np.any(self.degrees < 0)
+            or np.any(self.minutes < 0)
+            or np.any(self.seconds < 0)
+        ):
             raise ValueError("Degrees, minutes and seconds must be non-negative")
-        if not np.array_equal(np.floor(self.degrees), self.degrees) or not np.array_equal(np.floor(self.minutes), self.minutes):
+        if not np.array_equal(
+            np.floor(self.degrees), self.degrees
+        ) or not np.array_equal(np.floor(self.minutes), self.minutes):
             raise ValueError("Degrees and minutes must be whole numbers")
-        if np.any(self.minutes >= SEXAGESIMAL_BASE) or np.any(self.seconds >= SEXAGESIMAL_BASE):
+        if np.any(self.minutes >= SEXAGESIMAL_BASE) or np.any(
+            self.seconds >= SEXAGESIMAL_BASE
+        ):
             raise ValueError("Minutes and seconds must be less than 60")
 
     @classmethod
@@ -69,7 +86,7 @@ class DegreesMinutesSeconds:
         minutes: NumericArray,
         seconds: NumericArray,
         is_negative: NDArray[np.bool_] | None = None,
-        ) -> DegreesMinutesSeconds:
+    ) -> DegreesMinutesSeconds:
         """
         Build a canonical value by carrying overflowing and fractional components.
 
@@ -105,17 +122,30 @@ class DegreesMinutesSeconds:
         if np.any(degrees < 0) or np.any(minutes < 0) or np.any(seconds < 0):
             raise ValueError("Degrees, minutes and seconds must be non-negative")
         total_seconds: NumericArray = as_numeric_array(
-            np.round(degrees * SECONDS_PER_DEGREE + minutes * SEXAGESIMAL_BASE + seconds, SECONDS_ROUNDING_DECIMALS)
+            np.round(
+                degrees * SECONDS_PER_DEGREE + minutes * SEXAGESIMAL_BASE + seconds,
+                SECONDS_ROUNDING_DECIMALS,
             )
-        whole_degrees: NumericArray = as_numeric_array(np.floor_divide(total_seconds, SECONDS_PER_DEGREE))
-        remaining_seconds: NumericArray = as_numeric_array(total_seconds - whole_degrees * SECONDS_PER_DEGREE)
-        whole_minutes: NumericArray = as_numeric_array(np.floor_divide(remaining_seconds, SEXAGESIMAL_BASE))
+        )
+        whole_degrees: NumericArray = as_numeric_array(
+            np.floor_divide(total_seconds, SECONDS_PER_DEGREE)
+        )
+        remaining_seconds: NumericArray = as_numeric_array(
+            total_seconds - whole_degrees * SECONDS_PER_DEGREE
+        )
+        whole_minutes: NumericArray = as_numeric_array(
+            np.floor_divide(remaining_seconds, SEXAGESIMAL_BASE)
+        )
         return cls(
             degrees=whole_degrees,
             minutes=whole_minutes,
-            seconds=as_numeric_array(remaining_seconds - whole_minutes * SEXAGESIMAL_BASE),
-            is_negative=np.zeros(degrees.shape, dtype=np.bool_) if is_negative is None else is_negative,
-            )
+            seconds=as_numeric_array(
+                remaining_seconds - whole_minutes * SEXAGESIMAL_BASE
+            ),
+            is_negative=np.zeros(degrees.shape, dtype=np.bool_)
+            if is_negative is None
+            else is_negative,
+        )
 
     @property
     def total_seconds(self) -> NumericArray:
@@ -128,17 +158,20 @@ class DegreesMinutesSeconds:
             The signed angle in arcseconds.
         """
         magnitude: NumericArray = as_numeric_array(
-            self.degrees * SECONDS_PER_DEGREE + self.minutes * SEXAGESIMAL_BASE + self.seconds
-            )
+            self.degrees * SECONDS_PER_DEGREE
+            + self.minutes * SEXAGESIMAL_BASE
+            + self.seconds
+        )
         return as_numeric_array(np.where(self.is_negative, -magnitude, magnitude))
 
+    @override
     def __eq__(self, other: object) -> bool:
         """Compare if this angle is equal to another."""
         if not isinstance(other, DegreesMinutesSeconds):
             return False
         return self.degrees.shape == other.degrees.shape and np.allclose(
             self.total_seconds, other.total_seconds, atol=EQUALITY_TOLERANCE_SECONDS
-            )
+        )
 
     def __len__(self) -> int:
         """

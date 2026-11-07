@@ -1,6 +1,7 @@
 from enum import Enum
 
 import numpy as np
+from typing_extensions import override
 
 from ..prefix import MetricPrefix
 from ..types import NumericArray, as_numeric_array
@@ -13,6 +14,9 @@ class Unit(Enum):
     A unit takes no prefix unless it overrides `is_prefixable`. Subclasses define how a
     value converts to and from the base unit of their quantity.
     """
+
+    # Every unit is valued by its symbol; declared so the base class knows the type.
+    _value_: str
 
     @property
     def is_prefixable(self) -> bool:
@@ -54,7 +58,7 @@ class Unit(Enum):
             If a prefix other than `MetricPrefix.NONE` is given to a unit that takes none.
         """
         if prefix is not MetricPrefix.NONE and not self.is_prefixable:
-            raise ValueError(f"{self.value} takes no prefix: {prefix.value}")
+            raise ValueError(f"{self._value_} takes no prefix: {prefix.value}")
 
     def symbol(self, prefix: MetricPrefix = MetricPrefix.NONE) -> str:
         """
@@ -70,7 +74,7 @@ class Unit(Enum):
         str
             The symbol, such as `km2` or `ha`.
         """
-        return f"{prefix.value}{self.value}"
+        return f"{prefix.value}{self._value_}"
 
     def scale(self, prefix: MetricPrefix = MetricPrefix.NONE) -> float:
         """
@@ -86,9 +90,16 @@ class Unit(Enum):
         float
             The size of one step, ignoring any offset between the scales.
         """
-        return float(self.to_base(np.array(1.0), prefix) - self.to_base(np.array(0.0), prefix))
+        return float(
+            self.to_base(np.array(1.0), prefix) - self.to_base(np.array(0.0), prefix)
+        )
 
-    def to_base(self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE) -> NumericArray:
+    # An Enum cannot also be an ABC, so this stands in for an abstract method.
+    def to_base(
+        self,
+        value: NumericArray,  # pyright: ignore[reportUnusedParameter]
+        prefix: MetricPrefix = MetricPrefix.NONE,  # pyright: ignore[reportUnusedParameter]
+    ) -> NumericArray:
         """
         Convert values in this unit to the base unit of the quantity.
 
@@ -106,7 +117,12 @@ class Unit(Enum):
         """
         raise NotImplementedError
 
-    def from_base(self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE) -> NumericArray:
+    # An Enum cannot also be an ABC, so this stands in for an abstract method.
+    def from_base(
+        self,
+        value: NumericArray,  # pyright: ignore[reportUnusedParameter]
+        prefix: MetricPrefix = MetricPrefix.NONE,  # pyright: ignore[reportUnusedParameter]
+    ) -> NumericArray:
         """
         Convert values in the base unit of the quantity to this unit.
 
@@ -164,8 +180,14 @@ class LinearUnit(Unit):
         self.validate_prefix(prefix)
         return 10.0 ** (prefix.exponent * self.prefix_power) * self.factor
 
-    def to_base(self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE) -> NumericArray:
+    @override
+    def to_base(
+        self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE
+    ) -> NumericArray:
         return as_numeric_array(value * self.prefixed_factor(prefix))
 
-    def from_base(self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE) -> NumericArray:
+    @override
+    def from_base(
+        self, value: NumericArray, prefix: MetricPrefix = MetricPrefix.NONE
+    ) -> NumericArray:
         return as_numeric_array(value / self.prefixed_factor(prefix))

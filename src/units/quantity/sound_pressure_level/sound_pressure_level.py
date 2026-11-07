@@ -10,7 +10,9 @@ from .unit import SoundPressureLevelUnit
 REFERENCE_SOUND_PRESSURE_PASCAL = 20e-6
 
 
-class SoundPressureLevel(Quantity[SoundPressureLevelUnit], base_unit=SoundPressureLevelUnit.DECIBEL):
+class SoundPressureLevel(
+    Quantity[SoundPressureLevelUnit], base_unit=SoundPressureLevelUnit.DECIBEL
+):
     """
     Container class for sound pressure levels in air, relative to 20 micropascals.
 
@@ -33,7 +35,11 @@ class SoundPressureLevel(Quantity[SoundPressureLevelUnit], base_unit=SoundPressu
     @property
     def pressure(self) -> Pressure:
         """Return the effective sound pressure in pascals."""
-        return Pressure.from_base(as_numeric_array(REFERENCE_SOUND_PRESSURE_PASCAL * 10.0 ** (self.base_value / 20.0)))
+        return Pressure.from_base(
+            as_numeric_array(
+                REFERENCE_SOUND_PRESSURE_PASCAL * 10.0 ** (self.base_value / 20.0)
+            )
+        )
 
     def __add__(self, other: SoundPressureLevel) -> SoundPressureLevel:
         """
@@ -44,7 +50,7 @@ class SoundPressureLevel(Quantity[SoundPressureLevelUnit], base_unit=SoundPressu
         SoundPressureLevel
             The combined level in decibels.
         """
-        if not isinstance(other, SoundPressureLevel):
+        if type(other) is not type(self):
             return NotImplemented
         energy = 10.0 ** (self.base_value / 10.0) + 10.0 ** (other.base_value / 10.0)
         return self.from_base(as_numeric_array(10.0 * np.log10(energy)))
@@ -58,6 +64,6 @@ class SoundPressureLevel(Quantity[SoundPressureLevelUnit], base_unit=SoundPressu
         NumericArray
             The difference of the two levels in decibels.
         """
-        if not isinstance(other, SoundPressureLevel):
+        if type(other) is not type(self):
             return NotImplemented
         return as_numeric_array(self.base_value - other.base_value)

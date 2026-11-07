@@ -21,7 +21,9 @@ PREFIXED_UNITS: list[tuple[AreaUnit, MetricPrefix]] = [
 ]
 
 
-def make_area(values: list[float], unit: AreaUnit, prefix: MetricPrefix = MetricPrefix.NONE) -> Area:
+def make_area(
+    values: list[float], unit: AreaUnit, prefix: MetricPrefix = MetricPrefix.NONE
+) -> Area:
     return Area(value=np.array(values), unit=unit, prefix=prefix)
 
 

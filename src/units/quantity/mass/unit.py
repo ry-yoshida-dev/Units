@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -38,6 +40,7 @@ class MassUnit(LinearUnit):
     KAN = "kan"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of grams in one of this unit, without a prefix.
@@ -66,6 +69,7 @@ class MassUnit(LinearUnit):
                 return 3750
 
     @property
+    @override
     def is_prefixable(self) -> bool:
         """
         Return whether this unit takes an SI prefix.

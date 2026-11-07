@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -26,6 +28,7 @@ class SpeedUnit(LinearUnit):
     KNOT = "kn"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of meters per second in one of this unit.

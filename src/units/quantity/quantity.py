@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar, overload
+from typing import TYPE_CHECKING, ClassVar, Generic, TypeVar, cast, overload
 
 import numpy as np
+from typing_extensions import override
 
 from ..prefix import MetricPrefix
 from ..types import NumericArray, as_numeric_array
@@ -49,13 +50,15 @@ class Quantity(Generic[UnitT]):
     unit: UnitT
     prefix: MetricPrefix = MetricPrefix.NONE
 
-    _base_unit: ClassVar[Any]
+    _base_unit: ClassVar[Unit]
     _is_signed: ClassVar[bool] = True
 
     # Makes NumPy defer to `__rmul__` instead of multiplying element by element.
     __array_ufunc__: ClassVar[None] = None
 
-    def __init_subclass__(cls, *, base_unit: Unit | None = None, is_signed: bool | None = None) -> None:
+    def __init_subclass__(
+        cls, *, base_unit: Unit | None = None, is_signed: bool | None = None
+    ) -> None:
         super().__init_subclass__()
         if base_unit is not None:
             cls._base_unit = base_unit
@@ -68,10 +71,18 @@ class Quantity(Generic[UnitT]):
             raise ValueError(f"{type(self).__name__} value must not be negative")
         self.unit.validate_prefix(self.prefix)
 
+    @classmethod
+    def _typed_base_unit(cls) -> UnitT:
+        # A ClassVar cannot be typed by the class type parameter, so the unit given to
+        # `__init_subclass__` is narrowed here. `__post_init__` checks every unit against it.
+        return cast(UnitT, cls._base_unit)
+
     def _validate_unit(self, unit: Unit) -> None:
         unit_type: type[Unit] = type(self._base_unit)
         if not isinstance(unit, unit_type):
-            raise TypeError(f"{type(self).__name__} takes a {unit_type.__name__}, given: {unit!r}")
+            raise TypeError(
+                f"{type(self).__name__} takes a {unit_type.__name__}, given: {unit!r}"
+            )
 
     @classmethod
     def from_base(cls, value: NumericArray) -> Self:
@@ -88,7 +99,7 @@ class Quantity(Generic[UnitT]):
         Self
             The quantity in its base unit.
         """
-        return cls(value=value, unit=cls._base_unit)
+        return cls(value=value, unit=cls._typed_base_unit())
 
     @property
     def base_value(self) -> NumericArray:
@@ -102,7 +113,9 @@ class Quantity(Generic[UnitT]):
         """
         return self.unit.to_base(self.value, self.prefix)
 
-    def in_unit(self, unit: UnitT, prefix: MetricPrefix = MetricPrefix.NONE) -> NumericArray:
+    def in_unit(
+        self, unit: UnitT, prefix: MetricPrefix = MetricPrefix.NONE
+    ) -> NumericArray:
         """
         Return the values in a unit and prefix.
 
@@ -152,13 +165,16 @@ class Quantity(Generic[UnitT]):
         ValueError
             If a prefix is given to a unit that takes none.
         """
-        unit: UnitT = self._base_unit if converted_unit is None else converted_unit
+        unit: UnitT = (
+            self._typed_base_unit() if converted_unit is None else converted_unit
+        )
         if unit == self.unit and converted_prefix == self.prefix:
             return
         self.value = self.in_unit(unit, converted_prefix)
         self.unit = unit
         self.prefix = converted_prefix
 
+    @override
     def __eq__(self, other: object) -> bool:
         """
         Compare with another quantity of the same type in its base unit.
@@ -172,15 +188,22 @@ class Quantity(Generic[UnitT]):
             self.unit.scale(self.prefix), other.unit.scale(other.prefix)
         )
         return np.shape(self.value) == np.shape(other.value) and bool(
-            np.allclose(self.base_value, other.base_value, rtol=EQUALITY_TOLERANCE, atol=absolute_tolerance)
+            np.allclose(
+                self.base_value,
+                other.base_value,
+                rtol=EQUALITY_TOLERANCE,
+                atol=absolute_tolerance,
+            )
         )
 
+    @override
     def __str__(self) -> str:
-        """String representation with the prefixed unit symbol."""
+        """Return the values with the prefixed unit symbol."""
         return f"{self.value} {self.unit.symbol(self.prefix)}"
 
+    @override
     def __repr__(self) -> str:
-        """String representation with the unit and prefix members."""
+        """Return the values with the unit and prefix members."""
         return f"{type(self).__name__}(value={self.value}, unit={self.unit}, prefix={self.prefix})"
 
 
@@ -235,15 +258,11 @@ class LinearQuantity(Quantity[LinearUnitT]):
         """
         if not self._is_signed:
             raise TypeError(f"bad operand type for unary -: '{type(self).__name__}'")
-        return type(self)(value=as_numeric_array(-self.value), unit=self.unit, prefix=self.prefix)
+        return type(self)(
+            value=as_numeric_array(-self.value), unit=self.unit, prefix=self.prefix
+        )
 
-    @overload
-    def __mul__(self, other: float | NumericArray) -> Self: ...
-
-    @overload
-    def __mul__(self, other: Any) -> Any: ...
-
-    def __mul__(self, other: Any) -> Any:
+    def __mul__(self, other: float | NumericArray) -> Self:
         """
         Multiply by a scalar.
 
@@ -259,7 +278,11 @@ class LinearQuantity(Quantity[LinearUnitT]):
         """
         if isinstance(other, Quantity):
             return NotImplemented
-        return type(self)(value=as_numeric_array(self.value * other), unit=self.unit, prefix=self.prefix)
+        return type(self)(
+            value=as_numeric_array(self.value * other),
+            unit=self.unit,
+            prefix=self.prefix,
+        )
 
     def __rmul__(self, other: float | NumericArray) -> Self:
         """
@@ -277,15 +300,21 @@ class LinearQuantity(Quantity[LinearUnitT]):
         """
         if isinstance(other, Quantity):
             return NotImplemented
-        return type(self)(value=as_numeric_array(self.value * other), unit=self.unit, prefix=self.prefix)
+        return type(self)(
+            value=as_numeric_array(self.value * other),
+            unit=self.unit,
+            prefix=self.prefix,
+        )
+
+    @overload
+    def __truediv__(self, other: LinearQuantity[LinearUnitT]) -> NumericArray: ...
 
     @overload
     def __truediv__(self, other: float | NumericArray) -> Self: ...
 
-    @overload
-    def __truediv__(self, other: Any) -> Any: ...
-
-    def __truediv__(self, other: Any) -> Any:
+    def __truediv__(
+        self, other: LinearQuantity[LinearUnitT] | float | NumericArray
+    ) -> Self | NumericArray:
         """
         Divide by a quantity of the same type or a scalar.
 
@@ -301,8 +330,12 @@ class LinearQuantity(Quantity[LinearUnitT]):
             If dividing by float or NumericArray, returns the quantity in the same unit
             and prefix.
         """
-        if type(other) is type(self):
-            return as_numeric_array(self.base_value / other.base_value)
         if isinstance(other, Quantity):
-            return NotImplemented
-        return type(self)(value=as_numeric_array(self.value / other), unit=self.unit, prefix=self.prefix)
+            if type(other) is not type(self):
+                return NotImplemented
+            return as_numeric_array(self.base_value / other.base_value)
+        return type(self)(
+            value=as_numeric_array(self.value / other),
+            unit=self.unit,
+            prefix=self.prefix,
+        )

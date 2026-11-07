@@ -19,7 +19,7 @@ import numpy as np
 from units import Temperature, TemperatureUnit
 
 boiling = Temperature(value=np.array([100.0]), unit=TemperatureUnit.CELSIUS)
-print(boiling.kelvin)      # [373.15]
+print(boiling.kelvin)  # [373.15]
 print(boiling.fahrenheit)  # [212.]
 
 freezing = Temperature(value=np.array([32.0]), unit=TemperatureUnit.FAHRENHEIT)

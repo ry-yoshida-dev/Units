@@ -23,5 +23,5 @@ run = Time(value=np.array([45.0]), unit=TimeUnit.MIN)
 total = warmup + run
 
 print(total.second)  # [3600.]
-print(total.hour)    # [1.]
+print(total.hour)  # [1.]
 ```

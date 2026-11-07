@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -21,6 +23,7 @@ class TimeUnit(LinearUnit):
     WEEK: TimeUnit
         The week, 7 days.
     """
+
     S = "s"
     MIN = "min"
     HR = "h"
@@ -28,6 +31,7 @@ class TimeUnit(LinearUnit):
     WEEK = "week"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of seconds in one of this unit, without a prefix.
@@ -50,6 +54,7 @@ class TimeUnit(LinearUnit):
                 return 604800.0
 
     @property
+    @override
     def is_prefixable(self) -> bool:
         """
         Return whether this unit takes an SI prefix.

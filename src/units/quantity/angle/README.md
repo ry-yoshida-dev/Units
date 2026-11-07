@@ -36,8 +36,12 @@ southern_latitude = Angle.from_degrees_minutes_seconds(
 )
 print(southern_latitude.degree)  # [-35.6751]
 
-sexagesimal = Angle(value=np.array([-0.5]), unit=AngleUnit.DEGREE).degrees_minutes_seconds
-print(sexagesimal.degrees, sexagesimal.minutes, sexagesimal.is_negative)  # [0.] [30.] [ True]
+sexagesimal = Angle(
+    value=np.array([-0.5]), unit=AngleUnit.DEGREE
+).degrees_minutes_seconds
+print(
+    sexagesimal.degrees, sexagesimal.minutes, sexagesimal.is_negative
+)  # [0.] [30.] [ True]
 
 carried = DegreesMinutesSeconds.normalized(
     degrees=np.array([1.5]),

@@ -38,7 +38,9 @@ def test_unit_to_degree(unit: AngleUnit) -> None:
         (AngleUnit.RADIAN, "RADIAN", "radian"),
     ],
 )
-def test_unit_case_names(unit: AngleUnit, expected_upper: str, expected_lower: str) -> None:
+def test_unit_case_names(
+    unit: AngleUnit, expected_upper: str, expected_lower: str
+) -> None:
     assert unit.as_upper == expected_upper
     assert unit.as_lower == expected_lower
 
@@ -52,7 +54,9 @@ def test_unit_case_names(unit: AngleUnit, expected_upper: str, expected_lower: s
         (AngleUnit.RADIAN, False, True),
     ],
 )
-def test_unit_and_angle_flags(unit: AngleUnit, is_degree: bool, is_radian: bool) -> None:
+def test_unit_and_angle_flags(
+    unit: AngleUnit, is_degree: bool, is_radian: bool
+) -> None:
     angle: Angle = make_angle([1.0], unit)
     assert unit.is_degree is is_degree
     assert unit.is_radian is is_radian
@@ -138,7 +142,12 @@ def test_convert_unit_to_same_unit_keeps_value() -> None:
 
 def test_convert_unit_round_trip_is_stable() -> None:
     angle: Angle = make_angle([12.345, 359.999], AngleUnit.DEGREE)
-    for unit in [AngleUnit.RADIAN, AngleUnit.ARCSECOND, AngleUnit.ARCMINUTE, AngleUnit.DEGREE]:
+    for unit in [
+        AngleUnit.RADIAN,
+        AngleUnit.ARCSECOND,
+        AngleUnit.ARCMINUTE,
+        AngleUnit.DEGREE,
+    ]:
         angle.convert_unit(unit)
     assert np.allclose(angle.value, np.array([12.345, 359.999]))
 
@@ -153,7 +162,10 @@ def make_sexagesimal(
         degrees=np.array(degrees),
         minutes=np.array(minutes),
         seconds=np.array(seconds),
-        is_negative=np.array([False] * len(degrees) if is_negative is None else is_negative, dtype=np.bool_),
+        is_negative=np.array(
+            [False] * len(degrees) if is_negative is None else is_negative,
+            dtype=np.bool_,
+        ),
     )
 
 
@@ -182,7 +194,9 @@ def test_from_degrees_minutes_seconds_accepts_empty_arrays() -> None:
 
 
 def test_negated_degrees_minutes_seconds_expresses_southern_direction() -> None:
-    southern_latitude: Angle = -Angle.from_degrees_minutes_seconds(make_sexagesimal([0.0], [30.0], [0.0]))
+    southern_latitude: Angle = -Angle.from_degrees_minutes_seconds(
+        make_sexagesimal([0.0], [30.0], [0.0])
+    )
     assert np.allclose(southern_latitude.degree, np.array([-0.5]))
 
 
@@ -199,7 +213,12 @@ def test_from_normalized_degrees_minutes_seconds_matches_total() -> None:
 
 def test_from_degrees_minutes_seconds_applies_sign() -> None:
     angle: Angle = Angle.from_degrees_minutes_seconds(
-        make_sexagesimal([35.0, 0.0, 139.0], [40.0, 30.0, 45.0], [30.36, 0.0, 0.0], [True, True, False])
+        make_sexagesimal(
+            [35.0, 0.0, 139.0],
+            [40.0, 30.0, 45.0],
+            [30.36, 0.0, 0.0],
+            [True, True, False],
+        )
     )
     assert np.allclose(angle.degree, np.array([-35.6751, -0.5, 139.75]))
 
@@ -215,8 +234,12 @@ def test_from_degrees_minutes_seconds_applies_sign() -> None:
         (720.25, (720.0, 15.0, 0.0, False)),
     ],
 )
-def test_degrees_minutes_seconds_property(degree: float, expected: tuple[float, float, float, bool]) -> None:
-    sexagesimal: DegreesMinutesSeconds = make_angle([degree], AngleUnit.DEGREE).degrees_minutes_seconds
+def test_degrees_minutes_seconds_property(
+    degree: float, expected: tuple[float, float, float, bool]
+) -> None:
+    sexagesimal: DegreesMinutesSeconds = make_angle(
+        [degree], AngleUnit.DEGREE
+    ).degrees_minutes_seconds
     assert np.allclose(sexagesimal.degrees, np.array([expected[0]]))
     assert np.allclose(sexagesimal.minutes, np.array([expected[1]]))
     assert np.allclose(sexagesimal.seconds, np.array([expected[2]]))
@@ -231,14 +254,18 @@ def test_degrees_minutes_seconds_round_trip(unit: AngleUnit) -> None:
 
 
 def test_degrees_minutes_seconds_property_stays_canonical_near_boundary() -> None:
-    sexagesimal: DegreesMinutesSeconds = make_angle([359.9999999, -0.99999999], AngleUnit.DEGREE).degrees_minutes_seconds
+    sexagesimal: DegreesMinutesSeconds = make_angle(
+        [359.9999999, -0.99999999], AngleUnit.DEGREE
+    ).degrees_minutes_seconds
     assert np.all(sexagesimal.minutes < 60)
     assert np.all(sexagesimal.seconds < 60)
     assert np.all(sexagesimal.seconds >= 0)
 
 
 def test_degrees_minutes_seconds_property_absorbs_floating_point_noise() -> None:
-    sexagesimal: DegreesMinutesSeconds = make_angle([math.pi / 6], AngleUnit.RADIAN).degrees_minutes_seconds
+    sexagesimal: DegreesMinutesSeconds = make_angle(
+        [math.pi / 6], AngleUnit.RADIAN
+    ).degrees_minutes_seconds
     assert np.array_equal(sexagesimal.degrees, np.array([30.0]))
     assert np.array_equal(sexagesimal.minutes, np.array([0.0]))
     assert np.array_equal(sexagesimal.seconds, np.array([0.0]))
@@ -281,30 +308,42 @@ def test_trigonometric_functions_on_multiple_values() -> None:
 
 
 def test_addition_mixes_units_and_returns_radian() -> None:
-    total: Angle = make_angle([90.0], AngleUnit.DEGREE) + make_angle([5400.0], AngleUnit.ARCMINUTE)
+    total: Angle = make_angle([90.0], AngleUnit.DEGREE) + make_angle(
+        [5400.0], AngleUnit.ARCMINUTE
+    )
     assert total.unit == AngleUnit.RADIAN
     assert np.allclose(total.value, np.array([math.pi]))
 
 
 def test_subtraction_mixes_units_and_returns_radian() -> None:
-    difference: Angle = make_angle([90.0], AngleUnit.DEGREE) - make_angle([3600.0], AngleUnit.ARCSECOND)
+    difference: Angle = make_angle([90.0], AngleUnit.DEGREE) - make_angle(
+        [3600.0], AngleUnit.ARCSECOND
+    )
     assert difference.unit == AngleUnit.RADIAN
     assert np.allclose(difference.degree, np.array([89.0]))
 
 
 def test_subtraction_allows_negative_result() -> None:
-    difference: Angle = make_angle([10.0], AngleUnit.DEGREE) - make_angle([30.0], AngleUnit.DEGREE)
+    difference: Angle = make_angle([10.0], AngleUnit.DEGREE) - make_angle(
+        [30.0], AngleUnit.DEGREE
+    )
     assert np.allclose(difference.degree, np.array([-20.0]))
 
 
 def test_addition_is_elementwise() -> None:
-    total: Angle = make_angle([10.0, 20.0], AngleUnit.DEGREE) + make_angle([1.0, 2.0], AngleUnit.DEGREE)
+    total: Angle = make_angle([10.0, 20.0], AngleUnit.DEGREE) + make_angle(
+        [1.0, 2.0], AngleUnit.DEGREE
+    )
     assert np.allclose(total.degree, np.array([11.0, 22.0]))
 
 
 def test_equality_across_units() -> None:
-    assert make_angle([180.0], AngleUnit.DEGREE) == make_angle([math.pi], AngleUnit.RADIAN)
-    assert make_angle([1.0, 2.0], AngleUnit.DEGREE) == make_angle([60.0, 120.0], AngleUnit.ARCMINUTE)
+    assert make_angle([180.0], AngleUnit.DEGREE) == make_angle(
+        [math.pi], AngleUnit.RADIAN
+    )
+    assert make_angle([1.0, 2.0], AngleUnit.DEGREE) == make_angle(
+        [60.0, 120.0], AngleUnit.ARCMINUTE
+    )
 
 
 def test_inequality_on_different_values() -> None:
@@ -312,7 +351,9 @@ def test_inequality_on_different_values() -> None:
 
 
 def test_inequality_on_different_shapes() -> None:
-    assert make_angle([1.0], AngleUnit.DEGREE) != make_angle([1.0, 1.0], AngleUnit.DEGREE)
+    assert make_angle([1.0], AngleUnit.DEGREE) != make_angle(
+        [1.0, 1.0], AngleUnit.DEGREE
+    )
 
 
 def test_inequality_with_other_types() -> None:

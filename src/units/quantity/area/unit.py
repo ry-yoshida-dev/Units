@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from ..unit import LinearUnit
 
 
@@ -43,6 +45,7 @@ class AreaUnit(LinearUnit):
     CHO = "cho"
 
     @property
+    @override
     def factor(self) -> float:
         """
         Return the number of square meters in one of this unit, without a prefix.
@@ -73,6 +76,7 @@ class AreaUnit(LinearUnit):
                 return 1200000 / 121
 
     @property
+    @override
     def prefix_power(self) -> int:
         """
         Return the power a prefix is raised to when scaling this unit.
@@ -85,6 +89,7 @@ class AreaUnit(LinearUnit):
         return 2 if self is AreaUnit.SQUARE_METER else 1
 
     @property
+    @override
     def is_prefixable(self) -> bool:
         """
         Return whether this unit takes an SI prefix.
