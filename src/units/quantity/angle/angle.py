@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from typing import Self
+
 import numpy as np
-from typing_extensions import Self, override
+from typing_extensions import override
 
 from ...types import NumericArray, as_numeric_array
 from ..quantity import LinearQuantity

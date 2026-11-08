@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Self, overload
 
-from typing_extensions import Self, override
+from typing_extensions import override
 
 from ...prefix import MetricPrefix
 from ...types import NumericArray

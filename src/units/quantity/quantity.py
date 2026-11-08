@@ -11,7 +11,7 @@ from ..types import NumericArray, as_numeric_array
 from .unit import LinearUnit, Unit
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
 UnitT = TypeVar("UnitT", bound=Unit)
 LinearUnitT = TypeVar("LinearUnitT", bound=LinearUnit)
